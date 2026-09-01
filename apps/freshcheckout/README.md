@@ -54,6 +54,8 @@ GitHub URL
 
 ## Run locally
 
+The full local application, live orchestrator, lint, and browser gates require Node.js `>=22.13.0`.
+
 ```bash
 cd apps/freshcheckout
 npm install
@@ -65,6 +67,8 @@ Open `http://127.0.0.1:4318`.
 Without `SOLARI_API_KEY`, the UI offers a deterministic demo. Demo receipts repeatedly state that no Solari cloud execution occurred and are not valid verification evidence.
 
 With a Solari key configured in the server environment, the Live option becomes available. Never expose the key in chat, source control, browser code, or sandbox environment variables.
+
+The verified checkout evidence used the Solari `code` template's Node `18.20.4` only for the bounded, keyless `npm ci` / test / build / start contract inside the Sandbox. That observed path is not a claim of general Node 18 support for the live orchestrator or developer toolchain.
 
 ## Gates
 
