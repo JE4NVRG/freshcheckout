@@ -6,7 +6,7 @@
 
 FreshCheckout proves whether a new contributor can execute one declared onboarding path from an immutable commit in a clean machine, then observe the expected product screen.
 
-[Live demo](https://freshcheckout.je4ndev.com) · [Verified live run](https://freshcheckout.je4ndev.com/runs/3f3aaec0-5567-4f23-a8ff-498f69fe92e5) · [Machine-readable receipt](apps/freshcheckout/evidence/e0f4dbc/receipt.json) · [Real provider-drift failure](apps/freshcheckout/evidence/de47fed-provider-drift/README.md) · [Product brief](apps/freshcheckout/PRODUCT.md) · [Checkout contract](freshcheckout.config.json)
+[Live demo](https://freshcheckout.je4ndev.com) · [Verified live run](https://freshcheckout.je4ndev.com/runs/3f19c13f-cdeb-45dc-878b-b76cde7cf6d7) · [Machine-readable receipt](apps/freshcheckout/evidence/b74e6f4/receipt.json) · [Real provider-drift failure](apps/freshcheckout/evidence/de47fed-provider-drift/README.md) · [Product brief](apps/freshcheckout/PRODUCT.md) · [Checkout contract](freshcheckout.config.json)
 
 ![Solari verified](https://img.shields.io/badge/Solari-verified-b8f34a?style=flat-square&labelColor=111411)
 ![Local verification](https://img.shields.io/badge/local%20verification-55%20tests%20%2B%207%20E2E-b8f34a?style=flat-square&labelColor=111411)
@@ -15,7 +15,7 @@ FreshCheckout proves whether a new contributor can execute one declared onboardi
 
 </div>
 
-![FreshCheckout rendered in a recorded Solari Browser](apps/freshcheckout/evidence/e0f4dbc/browser.png)
+![FreshCheckout rendered in a recorded Solari Browser](apps/freshcheckout/evidence/b74e6f4/browser.png)
 
 ## Why FreshCheckout
 
@@ -64,7 +64,7 @@ Generate bounded receipt and destroy every remote resource
 A real Solari Sandbox + Browser run completed against commit:
 
 ```text
-e0f4dbce78ec2d0db4a683d3a647f41e1ff0b1e4
+b74e6f479f4f3529fe512702d41c44b7f1ef8cba
 ```
 
 | Check | Result |
@@ -84,7 +84,7 @@ e0f4dbce78ec2d0db4a683d3a647f41e1ff0b1e4
 | Private replay | Captured |
 | Sandbox cleanup read-back | `0` active |
 
-The complete bounded evidence is committed under [`apps/freshcheckout/evidence/e0f4dbc`](apps/freshcheckout/evidence/e0f4dbc).
+The complete bounded evidence is committed under [`apps/freshcheckout/evidence/b74e6f4`](apps/freshcheckout/evidence/b74e6f4).
 
 ## Public demo
 
@@ -187,7 +187,8 @@ apps/freshcheckout/
 ├── src/core/            Contract, planning, receipt, and redaction logic
 ├── src/server/          Fastify API, stores, Solari adapters, and runner
 ├── tests/               Unit, integration, lifecycle, retention, and E2E gates
-├── evidence/e0f4dbc/    Verified real-cloud receipt and screenshot
+├── evidence/b74e6f4/    Current verified real-cloud receipt and screenshot
+├── evidence/e0f4dbc/    Historical verified real-cloud receipt
 ├── evidence/de47fed-provider-drift/  Real failed run and remediation
 ├── PRODUCT.md           Product scope and acceptance criteria
 └── README.md            Technical quickstart and receipt semantics

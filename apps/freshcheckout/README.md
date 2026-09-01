@@ -121,8 +121,8 @@ Every receipt carries the commit SHA, checkout-contract SHA-256, runtime-policy 
 
 ## Evidence status
 
-A real Solari Sandbox + Browser run completed with verdict `verified` against commit `e0f4dbce78ec2d0db4a683d3a647f41e1ff0b1e4` on 2026-09-01. All declared stages passed, the Browser returned HTTP 200 and observed the declared text with zero console or request failures, screenshot and private replay capture succeeded, and cleanup read-back reported zero active Sandboxes.
+A real Solari Sandbox + Browser run completed with verdict `verified` against canonical `main` commit `b74e6f479f4f3529fe512702d41c44b7f1ef8cba` on 2026-09-01. All 11 declared stages passed, the Browser returned HTTP 200 and observed the declared text with zero console or request failures, screenshot and private replay capture succeeded, the Sandbox was destroyed, and console read-back reported zero active resources.
 
-See [`evidence/e0f4dbc`](./evidence/e0f4dbc) for the bounded receipt and screenshot. The claim remains limited to one checkout contract at that immutable commit.
+See [`evidence/b74e6f4`](./evidence/b74e6f4) for the current bounded receipt and screenshot. The real provider-drift failure that led to the template fix remains preserved under [`evidence/de47fed-provider-drift`](./evidence/de47fed-provider-drift). The verified claim remains limited to one checkout contract at one immutable commit.
 
 See [PRODUCT.md](./PRODUCT.md) for scope and acceptance criteria.

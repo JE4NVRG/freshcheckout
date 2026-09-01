@@ -1,0 +1,668 @@
+{
+  "schemaVersion": "freshcheckout.receipt/v1",
+  "id": "3f19c13f-cdeb-45dc-878b-b76cde7cf6d7",
+  "mode": "solari",
+  "status": "completed",
+  "verdict": "verified",
+  "source": {
+    "inputUrl": "https://github.com/JE4NVRG/freshcheckout",
+    "canonicalUrl": "https://github.com/JE4NVRG/freshcheckout",
+    "owner": "JE4NVRG",
+    "repository": "freshcheckout",
+    "defaultBranch": "main",
+    "commitSha": "b74e6f479f4f3529fe512702d41c44b7f1ef8cba"
+  },
+  "policy": {
+    "version": "node-web/v1",
+    "hash": "a354b0c5092e00f1a65d3de31c237c76df314aca972aed63e696ec7ccae94749",
+    "secretsInjected": false,
+    "sandboxIdleTimeoutMs": 600000,
+    "maxLogBytes": 64000
+  },
+  "checkout": {
+    "contractPath": "freshcheckout.config.json",
+    "contractHash": "72c7362e0a8e4512d6c445189f35f86651ef77d650fabcfa2725b3b37157147a",
+    "workingDirectory": "apps/freshcheckout",
+    "expectedText": "Your CI tests the codebase"
+  },
+  "stages": [
+    {
+      "name": "resolve",
+      "label": "Resolve source",
+      "status": "passed",
+      "startedAt": "2026-09-01T16:55:40.733Z",
+      "completedAt": "2026-09-01T16:55:41.500Z",
+      "durationMs": 767,
+      "summary": "Pinned main at b74e6f479f4f (537 KB)."
+    },
+    {
+      "name": "sandbox",
+      "label": "Create sandbox",
+      "status": "passed",
+      "startedAt": "2026-09-01T16:55:41.506Z",
+      "completedAt": "2026-09-01T16:55:43.341Z",
+      "durationMs": 1835,
+      "summary": "Solari Sandbox connected with a kill-on-timeout lifecycle."
+    },
+    {
+      "name": "clone",
+      "label": "Clone commit",
+      "status": "passed",
+      "startedAt": "2026-09-01T16:55:43.344Z",
+      "completedAt": "2026-09-01T16:55:44.398Z",
+      "durationMs": 1054,
+      "summary": "Observed HEAD matches pinned commit b74e6f479f4f."
+    },
+    {
+      "name": "inspect",
+      "label": "Read checkout contract",
+      "status": "passed",
+      "startedAt": "2026-09-01T16:55:44.400Z",
+      "completedAt": "2026-09-01T16:55:44.598Z",
+      "durationMs": 198,
+      "summary": "Loaded declared checkout contract 72c7362e0a8e from apps/freshcheckout."
+    },
+    {
+      "name": "install",
+      "label": "Run declared install",
+      "status": "passed",
+      "startedAt": "2026-09-01T16:55:44.600Z",
+      "completedAt": "2026-09-01T16:55:52.966Z",
+      "durationMs": 8366,
+      "summary": "Declared install command passed in a clean checkout."
+    },
+    {
+      "name": "test",
+      "label": "Run declared tests",
+      "status": "passed",
+      "startedAt": "2026-09-01T16:55:52.968Z",
+      "completedAt": "2026-09-01T16:56:01.110Z",
+      "durationMs": 8142,
+      "summary": "Declared test command passed."
+    },
+    {
+      "name": "build",
+      "label": "Run declared build",
+      "status": "passed",
+      "startedAt": "2026-09-01T16:56:01.112Z",
+      "completedAt": "2026-09-01T16:56:12.979Z",
+      "durationMs": 11867,
+      "summary": "Declared build command passed."
+    },
+    {
+      "name": "preview",
+      "label": "Expose declared port",
+      "status": "passed",
+      "startedAt": "2026-09-01T16:56:12.982Z",
+      "completedAt": "2026-09-01T16:56:15.517Z",
+      "durationMs": 2535,
+      "summary": "Declared port 4317 is reachable through Solari preview."
+    },
+    {
+      "name": "browser",
+      "label": "Observe declared text",
+      "status": "passed",
+      "startedAt": "2026-09-01T16:56:15.519Z",
+      "completedAt": "2026-09-01T16:56:26.741Z",
+      "durationMs": 11222,
+      "summary": "Rendered “FreshCheckout | Test the first run” with 0 console errors."
+    },
+    {
+      "name": "receipt",
+      "label": "Generate checkout receipt",
+      "status": "passed",
+      "startedAt": "2026-09-01T16:56:26.744Z",
+      "completedAt": "2026-09-01T16:56:26.746Z",
+      "durationMs": 2,
+      "summary": "Machine-readable execution receipt generated from observed stages."
+    },
+    {
+      "name": "cleanup",
+      "label": "Destroy sandbox",
+      "status": "passed",
+      "startedAt": "2026-09-01T16:56:26.749Z",
+      "completedAt": "2026-09-01T16:56:27.193Z",
+      "durationMs": 444,
+      "summary": "Solari Sandbox destroyed."
+    }
+  ],
+  "logs": [
+    {
+      "at": "2026-09-01T16:55:40.734Z",
+      "stage": "resolve",
+      "stream": "system",
+      "message": "Starting resolve."
+    },
+    {
+      "at": "2026-09-01T16:55:41.500Z",
+      "stage": "resolve",
+      "stream": "system",
+      "message": "Pinned main at b74e6f479f4f (537 KB)."
+    },
+    {
+      "at": "2026-09-01T16:55:41.506Z",
+      "stage": "sandbox",
+      "stream": "system",
+      "message": "Starting sandbox."
+    },
+    {
+      "at": "2026-09-01T16:55:43.341Z",
+      "stage": "sandbox",
+      "stream": "system",
+      "message": "Solari Sandbox connected with a kill-on-timeout lifecycle."
+    },
+    {
+      "at": "2026-09-01T16:55:43.344Z",
+      "stage": "clone",
+      "stream": "system",
+      "message": "Starting clone."
+    },
+    {
+      "at": "2026-09-01T16:55:44.398Z",
+      "stage": "clone",
+      "stream": "system",
+      "message": "Observed HEAD matches pinned commit b74e6f479f4f."
+    },
+    {
+      "at": "2026-09-01T16:55:44.400Z",
+      "stage": "inspect",
+      "stream": "system",
+      "message": "Starting inspect."
+    },
+    {
+      "at": "2026-09-01T16:55:44.598Z",
+      "stage": "inspect",
+      "stream": "system",
+      "message": "Loaded declared checkout contract 72c7362e0a8e from apps/freshcheckout."
+    },
+    {
+      "at": "2026-09-01T16:55:44.600Z",
+      "stage": "install",
+      "stream": "system",
+      "message": "Starting install."
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stdout",
+      "message": "added 290 packages, and audited 291 packages in 8s"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stdout",
+      "message": "85 packages are looking for funding"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stdout",
+      "message": "  run `npm fund` for details"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stdout",
+      "message": "found 0 vulnerabilities"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE Unsupported engine {"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   package: 'lru-cache@11.5.2',"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   required: { node: '20 || >=22' },"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   current: { node: 'v18.20.4', npm: '9.2.0' }"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE }"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE Unsupported engine {"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   package: 'playwright@1.62.1',"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   required: { node: '>=20' },"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   current: { node: 'v18.20.4', npm: '9.2.0' }"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE }"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE Unsupported engine {"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   package: 'playwright-core@1.62.1',"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   required: { node: '>=20' },"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   current: { node: 'v18.20.4', npm: '9.2.0' }"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE }"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE Unsupported engine {"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   package: 'toad-cache@3.7.4',"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   required: { node: '>=20' },"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   current: { node: 'v18.20.4', npm: '9.2.0' }"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE }"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE Unsupported engine {"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   package: 'yargs@18.0.0',"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   required: { node: '^20.19.0 || ^22.12.0 || >=23' },"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   current: { node: 'v18.20.4', npm: '9.2.0' }"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE }"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE Unsupported engine {"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   package: 'yargs-parser@22.0.0',"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   required: { node: '^20.19.0 || ^22.12.0 || >=23' },"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE   current: { node: 'v18.20.4', npm: '9.2.0' }"
+    },
+    {
+      "at": "2026-09-01T16:55:52.963Z",
+      "stage": "install",
+      "stream": "stderr",
+      "message": "npm WARN EBADENGINE }"
+    },
+    {
+      "at": "2026-09-01T16:55:52.966Z",
+      "stage": "install",
+      "stream": "system",
+      "message": "Declared install command passed in a clean checkout."
+    },
+    {
+      "at": "2026-09-01T16:55:52.968Z",
+      "stage": "test",
+      "stream": "system",
+      "message": "Starting test."
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": "> @solari-cookbook/freshcheckout@0.1.0 test"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": "> vitest run"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": " RUN  v3.2.7 /workspace/repository/apps/freshcheckout"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": " ✓ tests/solari-runner.test.ts (4 tests) 220ms"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": " ✓ tests/api.test.ts (7 tests) 371ms"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": " ✓ tests/solari-provider.test.ts (7 tests) 15ms"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": " ✓ tests/checkout-contract.test.ts (9 tests) 18ms"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": " ✓ tests/github-resolver.test.ts (3 tests) 55ms"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": " ✓ tests/planner.test.ts (3 tests) 14ms"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": " ✓ tests/artifact-store.test.ts (2 tests) 39ms"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": " ✓ tests/run-store.test.ts (1 test) 39ms"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": " ✓ tests/receipt.test.ts (1 test) 163ms"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": " ✓ tests/github-url.test.ts (12 tests) 7ms"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": " ✓ tests/address.test.ts (4 tests) 6ms"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": " ✓ tests/redact.test.ts (2 tests) 5ms"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": " Test Files  12 passed (12)"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": "      Tests  55 passed (55)"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": "   Start at  16:55:54"
+    },
+    {
+      "at": "2026-09-01T16:56:01.108Z",
+      "stage": "test",
+      "stream": "stdout",
+      "message": "   Duration  6.52s (transform 350ms, setup 0ms, collect 1.48s, tests 952ms, environment 5ms, prepare 1.20s)"
+    },
+    {
+      "at": "2026-09-01T16:56:01.110Z",
+      "stage": "test",
+      "stream": "system",
+      "message": "Declared test command passed."
+    },
+    {
+      "at": "2026-09-01T16:56:01.112Z",
+      "stage": "build",
+      "stream": "system",
+      "message": "Starting build."
+    },
+    {
+      "at": "2026-09-01T16:56:12.976Z",
+      "stage": "build",
+      "stream": "stdout",
+      "message": "> @solari-cookbook/freshcheckout@0.1.0 build"
+    },
+    {
+      "at": "2026-09-01T16:56:12.976Z",
+      "stage": "build",
+      "stream": "stdout",
+      "message": "> npm run typecheck && vite build"
+    },
+    {
+      "at": "2026-09-01T16:56:12.976Z",
+      "stage": "build",
+      "stream": "stdout",
+      "message": "> @solari-cookbook/freshcheckout@0.1.0 typecheck"
+    },
+    {
+      "at": "2026-09-01T16:56:12.976Z",
+      "stage": "build",
+      "stream": "stdout",
+      "message": "> tsc --noEmit"
+    },
+    {
+      "at": "2026-09-01T16:56:12.976Z",
+      "stage": "build",
+      "stream": "stdout",
+      "message": "vite v6.4.3 building for production..."
+    },
+    {
+      "at": "2026-09-01T16:56:12.976Z",
+      "stage": "build",
+      "stream": "stdout",
+      "message": "transforming..."
+    },
+    {
+      "at": "2026-09-01T16:56:12.976Z",
+      "stage": "build",
+      "stream": "stdout",
+      "message": "✓ 29 modules transformed."
+    },
+    {
+      "at": "2026-09-01T16:56:12.976Z",
+      "stage": "build",
+      "stream": "stdout",
+      "message": "rendering chunks..."
+    },
+    {
+      "at": "2026-09-01T16:56:12.976Z",
+      "stage": "build",
+      "stream": "stdout",
+      "message": "computing gzip size..."
+    },
+    {
+      "at": "2026-09-01T16:56:12.976Z",
+      "stage": "build",
+      "stream": "stdout",
+      "message": "dist/client/index.html                   1.76 kB │ gzip:  0.66 kB"
+    },
+    {
+      "at": "2026-09-01T16:56:12.976Z",
+      "stage": "build",
+      "stream": "stdout",
+      "message": "dist/client/assets/index-CTNbq0Ci.css   19.85 kB │ gzip:  5.11 kB"
+    },
+    {
+      "at": "2026-09-01T16:56:12.976Z",
+      "stage": "build",
+      "stream": "stdout",
+      "message": "dist/client/assets/index-DtThNvsX.js   213.74 kB │ gzip: 66.30 kB"
+    },
+    {
+      "at": "2026-09-01T16:56:12.976Z",
+      "stage": "build",
+      "stream": "stdout",
+      "message": "✓ built in 1.86s"
+    },
+    {
+      "at": "2026-09-01T16:56:12.979Z",
+      "stage": "build",
+      "stream": "system",
+      "message": "Declared build command passed."
+    },
+    {
+      "at": "2026-09-01T16:56:12.982Z",
+      "stage": "preview",
+      "stream": "system",
+      "message": "Starting preview."
+    },
+    {
+      "at": "2026-09-01T16:56:15.517Z",
+      "stage": "preview",
+      "stream": "system",
+      "message": "Declared port 4317 is reachable through Solari preview."
+    },
+    {
+      "at": "2026-09-01T16:56:15.519Z",
+      "stage": "browser",
+      "stream": "system",
+      "message": "Starting browser."
+    },
+    {
+      "at": "2026-09-01T16:56:26.741Z",
+      "stage": "browser",
+      "stream": "system",
+      "message": "Rendered “FreshCheckout | Test the first run” with 0 console errors."
+    },
+    {
+      "at": "2026-09-01T16:56:26.744Z",
+      "stage": "receipt",
+      "stream": "system",
+      "message": "Starting receipt."
+    },
+    {
+      "at": "2026-09-01T16:56:26.746Z",
+      "stage": "receipt",
+      "stream": "system",
+      "message": "Machine-readable execution receipt generated from observed stages."
+    },
+    {
+      "at": "2026-09-01T16:56:27.193Z",
+      "stage": "cleanup",
+      "stream": "system",
+      "message": "Solari Sandbox destroyed."
+    }
+  ],
+  "browser": {
+    "title": "FreshCheckout | Test the first run",
+    "httpReachable": true,
+    "httpStatus": 200,
+    "visibleAssertion": "Your CI tests the codebase",
+    "consoleErrorCount": 0,
+    "failedRequestCount": 0,
+    "observedOriginHash": "e4cf798fe12d157f2f213a8cd9ea30ba24d7ad98cb7b547e15a541890af8fb4f",
+    "screenshotPath": "/api/runs/3f19c13f-cdeb-45dc-878b-b76cde7cf6d7/artifacts/browser.png",
+    "replayCaptured": true
+  },
+  "createdAt": "2026-09-01T16:55:40.700Z",
+  "updatedAt": "2026-09-01T16:56:27.196Z",
+  "completedAt": "2026-09-01T16:56:27.196Z",
+  "disclaimer": "This receipt records one declared checkout path observed at one commit. It is not a security audit, endorsement, production-readiness claim, or guarantee."
+}
