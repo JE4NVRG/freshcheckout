@@ -9,7 +9,7 @@ FreshCheckout proves whether a new contributor can execute one declared onboardi
 [Live demo](https://freshcheckout.je4ndev.com) · [Verified live run](https://freshcheckout.je4ndev.com/runs/3f3aaec0-5567-4f23-a8ff-498f69fe92e5) · [Machine-readable receipt](apps/freshcheckout/evidence/e0f4dbc/receipt.json) · [Product brief](apps/freshcheckout/PRODUCT.md) · [Checkout contract](freshcheckout.config.json)
 
 ![Solari verified](https://img.shields.io/badge/Solari-verified-b8f34a?style=flat-square&labelColor=111411)
-![Tests](https://img.shields.io/badge/tests-54%20passing-b8f34a?style=flat-square&labelColor=111411)
+[![FreshCheckout CI](https://github.com/JE4NVRG/freshcheckout/actions/workflows/freshcheckout-ci.yml/badge.svg?branch=main)](https://github.com/JE4NVRG/freshcheckout/actions/workflows/freshcheckout-ci.yml)
 ![Node](https://img.shields.io/badge/Node-%3E%3D22.13-efede5?style=flat-square&labelColor=111411)
 ![License](https://img.shields.io/badge/license-MIT-efede5?style=flat-square&labelColor=111411)
 
@@ -157,7 +157,7 @@ npm ci
 npm run dev
 ```
 
-Open `http://127.0.0.1:4318`.
+Open `http://127.0.0.1:4317`.
 
 Without a key, the product remains in deterministic demo mode. Never commit or expose a real Solari key in browser code, logs, screenshots, or public deployment configuration.
 
@@ -212,6 +212,8 @@ This project was created for the Solari build challenge and remains visibly link
 FreshCheckout v1 supports one public repository, one checkout contract, and one browser text assertion. It intentionally excludes private repositories, arbitrary host execution, accounts, billing, teams, automatic repair, and security certification.
 
 See [`apps/freshcheckout/PRODUCT.md`](apps/freshcheckout/PRODUCT.md) for the complete boundary and acceptance criteria.
+
+Contributions follow [`CONTRIBUTING.md`](CONTRIBUTING.md). Please report vulnerabilities privately according to [`SECURITY.md`](SECURITY.md).
 
 ## License
 
