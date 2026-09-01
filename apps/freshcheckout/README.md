@@ -2,6 +2,8 @@
 
 > Your CI tests the codebase. FreshCheckout tests the first run.
 
+Public demo: **https://freshcheckout.je4ndev.com**. The public service is intentionally demo-only and has no Solari API key.
+
 FreshCheckout executes one repository-declared setup path at an immutable commit inside a clean [Solari](https://getsolari.com) Sandbox. It then opens the declared port in a recorded Solari Browser and creates a bounded checkout receipt.
 
 It answers one question only:
@@ -82,7 +84,7 @@ npm run test:e2e
 
 Current verified local baseline:
 
-- 51 unit/integration tests passing
+- 54 unit/integration tests passing
 - production build passing
 - Playwright desktop and mobile flows passing
 - no horizontal overflow at 390 px
@@ -100,6 +102,8 @@ Current verified local baseline:
 - Bounded logs with secret-pattern redaction
 - Fixed runtime and output budgets
 - Artifact-name allowlist
+- 5 MB screenshot and 25 MB replay limits
+- Seven-day retention with bounded receipt and artifact counts
 - No preview URL or browser session ID in public receipts
 - Replay retained privately; only screenshots are publicly addressable
 - Cleanup in `finally`

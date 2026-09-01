@@ -1,101 +1,218 @@
-# Solari Cookbook
+<div align="center">
 
-Short, runnable examples for [Solari](https://getsolari.com) — cloud browsers,
-sandboxes, and desktops behind one API key.
+# FreshCheckout
 
-Every example in this repo is a complete program you can run in under a minute.
-They are deliberately small: one idea each, no framework, no scaffolding to read
-past. Copy one into your project and change the parts you care about.
+### Your CI tests the codebase. FreshCheckout tests the first run.
 
-## Featured build: FreshCheckout
+FreshCheckout proves whether a new contributor can execute one declared onboarding path from an immutable commit in a clean machine, then observe the expected product screen.
 
-**FreshCheckout tests the first run from a clean checkout.** It resolves an immutable GitHub commit, executes a repository-declared setup contract in Solari Sandbox, observes the declared text in a recorded Solari Browser, and returns a bounded checkout receipt.
+[Live demo](https://freshcheckout.je4ndev.com) · [Verified receipt](apps/freshcheckout/evidence/e0f4dbc/receipt.json) · [Product brief](apps/freshcheckout/PRODUCT.md) · [Checkout contract](freshcheckout.config.json)
 
-- [Product and quickstart](apps/freshcheckout/README.md)
-- [Implementation brief and acceptance criteria](apps/freshcheckout/PRODUCT.md)
-- [Executable checkout contract](freshcheckout.config.json)
+![Solari verified](https://img.shields.io/badge/Solari-verified-b8f34a?style=flat-square&labelColor=111411)
+![Tests](https://img.shields.io/badge/tests-54%20passing-b8f34a?style=flat-square&labelColor=111411)
+![Node](https://img.shields.io/badge/Node-%3E%3D22.13-efede5?style=flat-square&labelColor=111411)
+![License](https://img.shields.io/badge/license-MIT-efede5?style=flat-square&labelColor=111411)
 
-The deterministic demo is available without cloud credentials. A live-evidence claim remains blocked until an actual Solari run and cleanup are verified.
+</div>
 
-## Examples
+![FreshCheckout rendered in a recorded Solari Browser](apps/freshcheckout/evidence/e0f4dbc/browser.png)
 
-### Cloud browser
+## Why FreshCheckout
 
-| Example | Language | What it shows |
-| --- | --- | --- |
-| [browser-quickstart-ts](examples/browser-quickstart-ts) | TypeScript | Launch a browser, open a page, read it |
-| [browser-quickstart-py](examples/browser-quickstart-py) | Python | Launch a browser, open a page, read it |
-| [browser-stealth-proxy-ts](examples/browser-stealth-proxy-ts) | TypeScript | Stealth mode + residential proxy egress |
-| [browser-profiles-ts](examples/browser-profiles-ts) | TypeScript | Log in once, reuse the session forever |
-| [browser-session-recording-py](examples/browser-session-recording-py) | Python | Record a session, download the replay |
+A green CI pipeline does not prove that a stranger can start the project.
 
-### Sandbox
+CI often runs with warm caches, preinstalled tools, hidden environment variables, and team knowledge. A new contributor has none of those advantages. FreshCheckout converts onboarding into a repository-owned executable contract and observes the result in disposable infrastructure.
 
-| Example | Language | What it shows |
-| --- | --- | --- |
-| [sandbox-quickstart-ts](examples/sandbox-quickstart-ts) | TypeScript | Run a command, write and read files |
-| [sandbox-code-interpreter-py](examples/sandbox-code-interpreter-py) | Python | Stateful Python kernel for agent loops |
-| [sandbox-port-preview-ts](examples/sandbox-port-preview-ts) | TypeScript | Expose a server in the VM on a public URL |
+It answers one bounded question:
 
-### Desktop
+> At this immutable commit, did the declared install, test, build, start, and browser assertion succeed from a clean checkout?
 
-| Example | Language | What it shows |
-| --- | --- | --- |
-| [desktop-computer-use-py](examples/desktop-computer-use-py) | Python | Screenshot, click, and type on a Linux GUI |
+It does not claim that the repository is secure, bug-free, production-ready, or fully certified.
 
-## Running an example
+## How it works
 
-Each directory is self-contained.
-
-```bash
-git clone https://github.com/solari-sdk/solari-cookbook.git
-cd solari-cookbook/examples/browser-quickstart-ts
-
-npm install                          # or: pip install -r requirements.txt
-export SOLARI_API_KEY=slr_live_...   # grab one at console.getsolari.com
-npm start                            # or: python main.py
+```text
+Public GitHub repository
+        │
+        ▼
+Resolve default branch + immutable 40-character commit
+        │
+        ▼
+Create disposable Solari Sandbox with no repository secrets
+        │
+        ▼
+Clone commit and validate freshcheckout.config.json
+        │
+        ▼
+Run declared executable + argv for install, test, build, start
+        │
+        ▼
+Expose only the declared port
+        │
+        ▼
+Open preview in a recorded Solari Browser
+        │
+        ▼
+Require declared visible text and capture screenshot/replay
+        │
+        ▼
+Generate bounded receipt and destroy every remote resource
 ```
 
-One `slr_live_` key works across browsers, sandboxes, and desktops, and every
-product bills to the same balance.
+## Verified evidence
 
-## Which product do I want?
+A real Solari Sandbox + Browser run completed against commit:
 
-- **Cloud browser** — you need a *web page*: scraping, testing, filling forms,
-  anything Playwright or Puppeteer would do locally. Adds stealth, managed
-  proxies, captcha solving, profiles, and session recording.
-- **Sandbox** — you need to *run code*: an LLM's Python, an untrusted build, a
-  data job. A headless microVM that boots from a snapshot in about a second.
-- **Desktop** — you need a *screen*: computer-use agents, GUI apps, anything
-  that has to be clicked. A sandbox plus X11 and a live VNC stream.
+```text
+e0f4dbce78ec2d0db4a683d3a647f41e1ff0b1e4
+```
 
-## Gotchas the examples encode
+| Check | Result |
+| --- | --- |
+| Immutable commit resolved | Passed |
+| Clean Sandbox created | Passed |
+| Checkout contract validated and hashed | Passed |
+| `npm ci` | Passed |
+| Unit and integration tests in Sandbox | Passed |
+| Production build | Passed |
+| Declared preview | Passed |
+| Solari Browser HTTP response | `200` |
+| Declared visible assertion | Observed |
+| Console errors | `0` |
+| Failed browser requests | `0` |
+| Screenshot | Captured |
+| Private replay | Captured |
+| Sandbox cleanup read-back | `0` active |
 
-Things that cost you an afternoon if you meet them cold:
+The complete bounded evidence is committed under [`apps/freshcheckout/evidence/e0f4dbc`](apps/freshcheckout/evidence/e0f4dbc).
 
-- **TypeScript: call `await solari.close()`.** The browser client keeps a
-  loopback proxy open for connection retries. Skip the close and your script
-  prints its output and then hangs forever instead of exiting.
-- **Recording is per session, not per account.** Pass `recording: true` when you
-  create the session; without it the replay endpoint 404s forever. The upload is
-  async after release, so poll for ~30s before giving up.
-- **Sandbox commands are not shell-interpreted.** `run("ls -la")` looks for a
-  binary named `ls -la`. Put argv in `args`, or run `sh -c` explicitly.
-- **`kill()`, not `close()`, ends a VM.** `close()` drops your local control
-  channel; the VM keeps running until its idle timeout.
-- **`timeoutMs` is a rolling idle window**, not a hard deadline — it resets on
-  every use.
+## Public demo
 
-## Links
+**https://freshcheckout.je4ndev.com**
 
-- Docs — [docs.getsolari.com](https://docs.getsolari.com)
-- Console — [console.getsolari.com](https://console.getsolari.com)
-- Changelog — [changelog.getsolari.com](https://changelog.getsolari.com)
-- Questions — [hello@getsolari.com](mailto:hello@getsolari.com)
+The public deployment intentionally runs in demo-only mode and has no `SOLARI_API_KEY`. It can demonstrate passing and failing receipts without consuming cloud credits or exposing a live execution endpoint.
 
-## Contributing
+The committed evidence above comes from a separate authenticated real-cloud run. Demo receipts are always labeled as simulated and are never presented as verification evidence.
 
-New examples are welcome. Keep them small, make them run end-to-end against the
-real API, and put anything surprising in a comment right where it bites.
+## Checkout contract
 
-MIT licensed.
+A repository opts in with `freshcheckout.config.json`:
+
+```json
+{
+  "version": 1,
+  "workingDirectory": "apps/freshcheckout",
+  "commands": {
+    "install": { "executable": "npm", "args": ["ci"] },
+    "test": { "executable": "npm", "args": ["test"] },
+    "build": { "executable": "npm", "args": ["run", "build"] },
+    "start": {
+      "executable": "node",
+      "args": [
+        "node_modules/tsx/dist/cli.mjs",
+        "src/server/index.ts",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "4317"
+      ]
+    }
+  },
+  "port": 4317,
+  "assertion": { "text": "Your CI tests the codebase" }
+}
+```
+
+Commands are data, not shell prose. FreshCheckout rejects traversal, absolute working directories, control characters, shell operators, invalid ports, oversized argv, and empty assertions before execution.
+
+## Safety boundaries
+
+- Public canonical `github.com` repositories only
+- Immutable source commit before execution
+- No repository or orchestrator secrets inside the Sandbox
+- Executable and argv validated separately
+- Fixed repository, command, output, log, artifact, and idle-lifetime budgets
+- 64 KB command-output ceiling with immediate process termination
+- Screenshot and replay size limits
+- Receipt and artifact retention limits
+- Preview origin allowlist in the Browser
+- Public receipts exclude raw preview URLs and session IDs
+- Browser and Sandbox cleanup runs after success or failure
+- Public deployment is demo-only
+
+Repository files, logs, browser pages, and command output are treated as untrusted data.
+
+## Run locally
+
+Requirements:
+
+- Node.js `>=22.13.0`
+- npm
+- Optional `SOLARI_API_KEY` for private live runs
+
+```bash
+git clone https://github.com/JE4NVRG/freshcheckout.git
+cd freshcheckout/apps/freshcheckout
+npm ci
+npm run dev
+```
+
+Open `http://127.0.0.1:4318`.
+
+Without a key, the product remains in deterministic demo mode. Never commit or expose a real Solari key in browser code, logs, screenshots, or public deployment configuration.
+
+## Quality gates
+
+```bash
+npm audit --audit-level=high
+npm run typecheck
+npm run lint
+npm test
+npm run build
+npm run test:e2e
+```
+
+Verified baseline:
+
+- 54 unit and integration tests
+- TypeScript strict checks
+- ESLint clean
+- Production build
+- Playwright desktop and mobile flows
+- 390 px mobile overflow and touch-target checks
+- Gitleaks scan on every published commit
+
+## Project structure
+
+```text
+apps/freshcheckout/
+├── src/client/          React product UI and receipt experience
+├── src/core/            Contract, planning, receipt, and redaction logic
+├── src/server/          Fastify API, stores, Solari adapters, and runner
+├── tests/               Unit, integration, lifecycle, retention, and E2E gates
+├── evidence/e0f4dbc/    Verified real-cloud receipt and screenshot
+├── PRODUCT.md           Product scope and acceptance criteria
+└── README.md            Technical quickstart and receipt semantics
+
+freshcheckout.config.json  Executable checkout contract
+```
+
+## Built with Solari
+
+FreshCheckout uses:
+
+- [Solari Sandbox](https://getsolari.com) for disposable isolated execution
+- [Solari Browser](https://getsolari.com) for recorded browser observation
+- The official [Solari Cookbook](https://github.com/solari-sdk/solari-cookbook) as its upstream fork parent
+
+This project was created for the Solari build challenge and remains visibly linked to the upstream cookbook through GitHub's fork relationship.
+
+## Current scope
+
+FreshCheckout v1 supports one public repository, one checkout contract, and one browser text assertion. It intentionally excludes private repositories, arbitrary host execution, accounts, billing, teams, automatic repair, and security certification.
+
+See [`apps/freshcheckout/PRODUCT.md`](apps/freshcheckout/PRODUCT.md) for the complete boundary and acceptance criteria.
+
+## License
+
+MIT. The original cookbook examples remain attributed to the [Solari SDK organization](https://github.com/solari-sdk).

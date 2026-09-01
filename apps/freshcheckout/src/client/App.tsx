@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNo
 
 import type { RunMode, RunReceipt, StageStatus } from "../core/model";
 
-const DEFAULT_REPOSITORY = "https://github.com/solari-sdk/solari-cookbook";
+const DEFAULT_REPOSITORY = "https://github.com/JE4NVRG/freshcheckout";
 
 interface CreateRunResponse {
   run: RunReceipt;
@@ -62,8 +62,8 @@ function SiteHeader(): ReactNode {
       <nav aria-label="Primary navigation">
         <a href="/#method">Method</a>
         <a href="/#security">Safety</a>
-        <a href="https://github.com/solari-sdk/solari-cookbook" rel="noreferrer" target="_blank">
-          Cookbook <span aria-hidden="true">↗</span>
+        <a href="https://github.com/JE4NVRG/freshcheckout" rel="noreferrer" target="_blank">
+          GitHub <span aria-hidden="true">↗</span>
         </a>
       </nav>
     </header>

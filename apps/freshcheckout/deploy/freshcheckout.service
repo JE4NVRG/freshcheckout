@@ -1,0 +1,23 @@
+[Unit]
+Description=FreshCheckout public demo
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/jean/services/freshcheckout/apps/freshcheckout
+ExecStart=/home/jean/.nvm/versions/node/v22.23.2/bin/node node_modules/tsx/dist/cli.mjs src/server/index.ts --host 127.0.0.1 --port 3050
+Restart=on-failure
+RestartSec=5
+Environment=NODE_ENV=production
+Environment=FRESHCHECKOUT_DEMO_DELAY_MS=180
+Environment=PATH=/home/jean/.nvm/versions/node/v22.23.2/bin:/usr/local/bin:/usr/bin:/bin
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+UMask=0077
+MemoryMax=512M
+CPUQuota=100%
+
+[Install]
+WantedBy=default.target

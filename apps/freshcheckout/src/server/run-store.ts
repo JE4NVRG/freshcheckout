@@ -1,4 +1,4 @@
-import { mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rename, stat, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { setTimeout as wait } from "node:timers/promises";
 
@@ -6,6 +6,8 @@ import { receiptSchema, type RunReceipt } from "../core/model.js";
 
 const REPLACE_ATTEMPTS = 8;
 const RETRYABLE_REPLACE_ERRORS = new Set(["EACCES", "EBUSY", "EPERM"]);
+const DEFAULT_MAX_ENTRIES = 200;
+const DEFAULT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1_000;
 
 function errorCode(error: unknown): string | undefined {
   if (typeof error !== "object" || error === null || !("code" in error)) return undefined;
@@ -37,8 +39,13 @@ export class RunNotFoundError extends Error {
 
 export class RunStore {
   private readonly directory: string;
+  private pruneQueue = Promise.resolve();
 
-  public constructor(directory = path.resolve(process.cwd(), ".freshcheckout", "runs")) {
+  public constructor(
+    directory = path.resolve(process.cwd(), ".freshcheckout", "runs"),
+    private readonly maxEntries = DEFAULT_MAX_ENTRIES,
+    private readonly maxAgeMs = DEFAULT_MAX_AGE_MS,
+  ) {
     this.directory = directory;
   }
 
@@ -49,6 +56,7 @@ export class RunStore {
     const temporary = `${target}.${process.pid}.${Date.now()}.tmp`;
     await writeFile(temporary, `${JSON.stringify(parsed, null, 2)}\n`, { encoding: "utf8", flag: "wx" });
     await replaceFile(temporary, target);
+    await this.queuePrune();
     return parsed;
   }
 
@@ -74,5 +82,26 @@ export class RunStore {
       throw new RunNotFoundError(id);
     }
     return path.join(this.directory, `${id}.json`);
+  }
+
+  private async queuePrune(): Promise<void> {
+    this.pruneQueue = this.pruneQueue.then(() => this.prune(), () => this.prune());
+    await this.pruneQueue;
+  }
+
+  private async prune(): Promise<void> {
+    const names = (await readdir(this.directory)).filter((name) => /^[0-9a-f-]{36}\.json$/i.test(name));
+    const files = await Promise.all(names.map(async (name) => {
+      const target = path.join(this.directory, name);
+      return { target, modifiedAt: (await stat(target)).mtimeMs };
+    }));
+    files.sort((left, right) => right.modifiedAt - left.modifiedAt);
+    const now = Date.now();
+    await Promise.all(files.map(async (file, index) => {
+      if (index < this.maxEntries && now - file.modifiedAt <= this.maxAgeMs) return;
+      await unlink(file.target).catch((error: unknown) => {
+        if (errorCode(error) !== "ENOENT") throw error;
+      });
+    }));
   }
 }
