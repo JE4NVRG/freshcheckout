@@ -15,13 +15,8 @@ No Solari credential is required for the default test suite.
 ```bash
 cd apps/freshcheckout
 npm ci
-npm audit --audit-level=high
-npm run typecheck
-npm run lint
-npm test
-npm run build
 npx playwright install chromium
-npm run test:e2e
+npm run verify
 ```
 
 Expected baseline:

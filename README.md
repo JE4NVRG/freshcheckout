@@ -9,7 +9,7 @@ FreshCheckout proves whether a new contributor can execute one declared onboardi
 [Live demo](https://freshcheckout.je4ndev.com) · [Verified live run](https://freshcheckout.je4ndev.com/runs/3f3aaec0-5567-4f23-a8ff-498f69fe92e5) · [Machine-readable receipt](apps/freshcheckout/evidence/e0f4dbc/receipt.json) · [Product brief](apps/freshcheckout/PRODUCT.md) · [Checkout contract](freshcheckout.config.json)
 
 ![Solari verified](https://img.shields.io/badge/Solari-verified-b8f34a?style=flat-square&labelColor=111411)
-[![FreshCheckout CI](https://github.com/JE4NVRG/freshcheckout/actions/workflows/freshcheckout-ci.yml/badge.svg?branch=main)](https://github.com/JE4NVRG/freshcheckout/actions/workflows/freshcheckout-ci.yml)
+![Local verification](https://img.shields.io/badge/local%20verification-54%20tests%20%2B%207%20E2E-b8f34a?style=flat-square&labelColor=111411)
 ![Node](https://img.shields.io/badge/Node-%3E%3D22.13-efede5?style=flat-square&labelColor=111411)
 ![License](https://img.shields.io/badge/license-MIT-efede5?style=flat-square&labelColor=111411)
 
@@ -164,13 +164,10 @@ Without a key, the product remains in deterministic demo mode. Never commit or e
 ## Quality gates
 
 ```bash
-npm audit --audit-level=high
-npm run typecheck
-npm run lint
-npm test
-npm run build
-npm run test:e2e
+npm run verify
 ```
+
+`verify` runs the dependency audit, strict typecheck, lint, 54 unit/integration tests, production build, and Playwright desktop/mobile suite locally. No hosted CI account or Solari credit is required.
 
 Verified baseline:
 
