@@ -19,6 +19,7 @@ import type { ArtifactStore } from "./artifact-store.js";
 
 const WORK_DIRECTORY = "/workspace/repository";
 const PREVIEW_ATTEMPTS = 35;
+const COMMAND_OUTPUT_LIMIT_BYTES = 64_000;
 
 export class SolariSandboxAdapter implements RemoteSandbox {
   private workingDirectory = WORK_DIRECTORY;
@@ -73,11 +74,59 @@ export class SolariSandboxAdapter implements RemoteSandbox {
   }
 
   public async run(command: CommandSpec): Promise<CommandOutput> {
-    return this.sandbox.commands.run(command.executable, {
+    const handle = await this.sandbox.commands.start(command.executable, {
       args: command.args,
       cwd: this.workingDirectory,
-      timeoutMs: command.timeoutMs,
     });
+    let stdout = "";
+    let stderr = "";
+    let outputBytes = 0;
+    let overflow = false;
+    let timedOut = false;
+    let killPromise: Promise<void> | undefined;
+    const requestKill = () => {
+      killPromise ??= handle.kill().catch(() => undefined);
+      return killPromise;
+    };
+
+    handle.onData((chunk) => {
+      if (overflow || !chunk.data) return;
+      const bytes = Buffer.from(chunk.data, "utf8");
+      const remaining = Math.max(0, COMMAND_OUTPUT_LIMIT_BYTES - outputBytes);
+      const acceptedBytes = bytes.subarray(0, remaining);
+      const accepted = acceptedBytes.toString("utf8");
+      outputBytes += acceptedBytes.byteLength;
+      if (chunk.stream === "stdout") stdout += accepted;
+      else stderr += accepted;
+      if (bytes.byteLength > remaining) {
+        overflow = true;
+        void requestKill();
+      }
+    });
+
+    const exit = handle.wait();
+    void exit.catch(() => undefined);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<never>((_resolve, reject) => {
+      timer = setTimeout(() => {
+        timedOut = true;
+        void requestKill();
+        reject(new Error(`Declared command exceeded its ${command.timeoutMs} ms timeout.`));
+      }, command.timeoutMs);
+    });
+
+    try {
+      const exitCode = await Promise.race([exit, timeout]);
+      if (overflow) throw new Error("Declared command output exceeded the 64 KB limit.");
+      return { exitCode, stdout, stderr };
+    } catch (error) {
+      if (overflow) throw new Error("Declared command output exceeded the 64 KB limit.", { cause: error });
+      if (timedOut) throw new Error(`Declared command exceeded its ${command.timeoutMs} ms timeout.`, { cause: error });
+      throw error;
+    } finally {
+      if (timer) clearTimeout(timer);
+      if (killPromise) await killPromise;
+    }
   }
 
   public async startPreview(command: CommandSpec, port: number): Promise<PreviewResult> {

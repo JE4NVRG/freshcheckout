@@ -15,8 +15,8 @@
       "args": ["run", "build"]
     },
     "start": {
-      "executable": "npm",
-      "args": ["start"]
+      "executable": "node",
+      "args": ["node_modules/tsx/dist/cli.mjs", "src/server/index.ts", "--host", "0.0.0.0", "--port", "4317"]
     }
   },
   "port": 4317,

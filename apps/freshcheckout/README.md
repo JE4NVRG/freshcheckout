@@ -26,7 +26,7 @@ Live runs require `freshcheckout.config.json` at the repository root:
     "install": { "executable": "npm", "args": ["ci"] },
     "test": { "executable": "npm", "args": ["test"] },
     "build": { "executable": "npm", "args": ["run", "build"] },
-    "start": { "executable": "npm", "args": ["start"] }
+    "start": { "executable": "node", "args": ["node_modules/tsx/dist/cli.mjs", "src/server/index.ts", "--host", "0.0.0.0", "--port", "4317"] }
   },
   "port": 4317,
   "assertion": { "text": "FreshCheckout tests the first run." }
@@ -78,7 +78,7 @@ npm run test:e2e
 
 Current verified local baseline:
 
-- 45 unit/integration tests passing
+- 51 unit/integration tests passing
 - production build passing
 - Playwright desktop and mobile flows passing
 - no horizontal overflow at 390 px

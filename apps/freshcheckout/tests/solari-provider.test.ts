@@ -4,6 +4,8 @@ import type { Sandbox } from "@solarisdk/sdk";
 
 import { connectSandboxOrKill, SolariSandboxAdapter } from "../src/server/solari-provider.js";
 
+type DataChunk = { stream: "stdout" | "stderr"; data: string };
+
 function fakeSandbox() {
   return {
     connect: vi.fn<() => Promise<void>>(),
@@ -43,6 +45,52 @@ describe("connectSandboxOrKill", () => {
     const failure = await connectSandboxOrKill(sandbox).catch((error: unknown) => error);
     expect(failure).toBeInstanceOf(AggregateError);
     expect((failure as AggregateError).errors).toEqual([connectionError, cleanupError]);
+  });
+});
+
+describe("SolariSandboxAdapter command output budget", () => {
+  function subject(chunks: DataChunk[], exitCode = 0) {
+    const handle = {
+      cmdId: "command-test",
+      stdin: vi.fn(),
+      onData: vi.fn((callback: (chunk: DataChunk) => void) => {
+        for (const chunk of chunks) callback(chunk);
+      }),
+      wait: vi.fn(() => Promise.resolve(exitCode)),
+      kill: vi.fn(() => Promise.resolve()),
+    };
+    const sandbox = {
+      commands: { start: vi.fn(() => Promise.resolve(handle)) },
+    };
+    return {
+      adapter: new SolariSandboxAdapter(sandbox as unknown as Sandbox),
+      handle,
+    };
+  }
+
+  it("returns bounded stdout and stderr for a normal command", async () => {
+    const { adapter, handle } = subject([
+      { stream: "stdout", data: "ok\n" },
+      { stream: "stderr", data: "warning\n" },
+    ]);
+    await expect(adapter.run({
+      executable: "npm",
+      args: ["test"],
+      purpose: "test",
+      timeoutMs: 30_000,
+    })).resolves.toEqual({ exitCode: 0, stdout: "ok\n", stderr: "warning\n" });
+    expect(handle.kill).not.toHaveBeenCalled();
+  });
+
+  it("kills and fails a command that exceeds 64 KB of output", async () => {
+    const { adapter, handle } = subject([{ stream: "stdout", data: "x".repeat(64_001) }]);
+    await expect(adapter.run({
+      executable: "npm",
+      args: ["test"],
+      purpose: "test",
+      timeoutMs: 30_000,
+    })).rejects.toThrow("output exceeded the 64 KB limit");
+    expect(handle.kill).toHaveBeenCalledOnce();
   });
 });
 

@@ -1,7 +1,7 @@
 import { buildApp } from "./app.js";
+import { resolveServerAddress } from "./address.js";
 
-const host = process.env.FRESHCHECKOUT_HOST ?? "127.0.0.1";
-const port = Number(process.env.FRESHCHECKOUT_PORT ?? 4317);
+const { host, port } = resolveServerAddress();
 const app = await buildApp();
 
 try {
