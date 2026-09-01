@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { setTimeout as wait } from "node:timers/promises";
 
-import { Solari } from "@solarisdk/browser";
+import type { Solari as SolariBrowserClient } from "@solarisdk/browser";
 import { SolariClient, type CommandHandle, type Sandbox } from "@solarisdk/sdk";
 
 import { parseCheckoutContract, type ParsedCheckoutContract } from "../core/checkout-contract.js";
@@ -130,8 +130,9 @@ export async function connectSandboxOrKill<T extends { connect(): Promise<unknow
 }
 
 async function verifyWithSolariBrowser(apiKey: string, url: string, expectedText: string): Promise<BrowserObservation> {
+  const { Solari } = await import("@solarisdk/browser");
   const client = new Solari({ apiKey, timeoutMs: 90_000 });
-  let browser: Awaited<ReturnType<Solari["launch"]>> | undefined;
+  let browser: Awaited<ReturnType<SolariBrowserClient["launch"]>> | undefined;
   let sessionId = "";
   let replay: Uint8Array | undefined;
   let observation: Omit<BrowserObservation, "replay"> | undefined;
