@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNo
 import type { RunMode, RunReceipt, StageStatus } from "../core/model";
 
 const DEFAULT_REPOSITORY = "https://github.com/JE4NVRG/freshcheckout";
+const VERIFIED_RUN_PATH = "/runs/3f3aaec0-5567-4f23-a8ff-498f69fe92e5";
 
 interface CreateRunResponse {
   run: RunReceipt;
@@ -65,6 +66,7 @@ function SiteHeader(): ReactNode {
         <a href="https://github.com/JE4NVRG/freshcheckout" rel="noreferrer" target="_blank">
           GitHub <span aria-hidden="true">↗</span>
         </a>
+        <a href={VERIFIED_RUN_PATH}>Verified run</a>
       </nav>
     </header>
   );

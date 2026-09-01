@@ -6,7 +6,7 @@
 
 FreshCheckout proves whether a new contributor can execute one declared onboarding path from an immutable commit in a clean machine, then observe the expected product screen.
 
-[Live demo](https://freshcheckout.je4ndev.com) · [Verified receipt](apps/freshcheckout/evidence/e0f4dbc/receipt.json) · [Product brief](apps/freshcheckout/PRODUCT.md) · [Checkout contract](freshcheckout.config.json)
+[Live demo](https://freshcheckout.je4ndev.com) · [Verified live run](https://freshcheckout.je4ndev.com/runs/3f3aaec0-5567-4f23-a8ff-498f69fe92e5) · [Machine-readable receipt](apps/freshcheckout/evidence/e0f4dbc/receipt.json) · [Product brief](apps/freshcheckout/PRODUCT.md) · [Checkout contract](freshcheckout.config.json)
 
 ![Solari verified](https://img.shields.io/badge/Solari-verified-b8f34a?style=flat-square&labelColor=111411)
 ![Tests](https://img.shields.io/badge/tests-54%20passing-b8f34a?style=flat-square&labelColor=111411)
