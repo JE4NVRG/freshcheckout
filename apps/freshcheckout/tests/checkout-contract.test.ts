@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+
 import { describe, expect, it } from "vitest";
 
 import { contractCommand, parseCheckoutContract } from "../src/core/checkout-contract.js";
@@ -50,5 +52,18 @@ describe("FreshCheckout contract", () => {
 
     expect(parsed.contract.workingDirectory).toBe(".");
     expect(contractCommand(parsed.contract, "test")).toBeUndefined();
+  });
+
+  it("keeps the canonical repository contract on pinned Node 22 tooling", async () => {
+    const raw = await readFile(new URL("../../../freshcheckout.config.json", import.meta.url), "utf8");
+    const parsed = parseCheckoutContract(JSON.parse(raw) as unknown).contract;
+
+    for (const name of ["install", "test", "build"] as const) {
+      expect(parsed.commands[name]?.executable).toBe("npx");
+      expect(parsed.commands[name]?.args).toContain("--package=node@22.22.0");
+      expect(parsed.commands[name]?.args).toContain("--package=npm@10.9.4");
+    }
+    expect(parsed.commands.start.executable).toBe("npx");
+    expect(parsed.commands.start.args).toContain("--package=node@22.22.0");
   });
 });

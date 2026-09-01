@@ -3,20 +3,20 @@
   "workingDirectory": "apps/freshcheckout",
   "commands": {
     "install": {
-      "executable": "npm",
-      "args": ["ci"]
+      "executable": "npx",
+      "args": ["--yes", "--package=node@22.22.0", "--package=npm@10.9.4", "npm", "ci"]
     },
     "test": {
-      "executable": "npm",
-      "args": ["test"]
+      "executable": "npx",
+      "args": ["--yes", "--package=node@22.22.0", "--package=npm@10.9.4", "npm", "test"]
     },
     "build": {
-      "executable": "npm",
-      "args": ["run", "build"]
+      "executable": "npx",
+      "args": ["--yes", "--package=node@22.22.0", "--package=npm@10.9.4", "npm", "run", "build"]
     },
     "start": {
-      "executable": "node",
-      "args": ["node_modules/tsx/dist/cli.mjs", "src/server/index.ts", "--host", "0.0.0.0", "--port", "4317"]
+      "executable": "npx",
+      "args": ["--yes", "--package=node@22.22.0", "node", "node_modules/tsx/dist/cli.mjs", "src/server/index.ts", "--host", "0.0.0.0", "--port", "4317"]
     }
   },
   "port": 4317,

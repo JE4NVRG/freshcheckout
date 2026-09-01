@@ -9,7 +9,7 @@ FreshCheckout proves whether a new contributor can execute one declared onboardi
 [Live demo](https://freshcheckout.je4ndev.com) · [Verified live run](https://freshcheckout.je4ndev.com/runs/3f19c13f-cdeb-45dc-878b-b76cde7cf6d7) · [Machine-readable receipt](apps/freshcheckout/evidence/b74e6f4/receipt.json) · [Real provider-drift failure](apps/freshcheckout/evidence/de47fed-provider-drift/README.md) · [Product brief](apps/freshcheckout/PRODUCT.md) · [Checkout contract](freshcheckout.config.json)
 
 ![Solari verified](https://img.shields.io/badge/Solari-verified-b8f34a?style=flat-square&labelColor=111411)
-![Local verification](https://img.shields.io/badge/local%20verification-55%20tests%20%2B%207%20E2E-b8f34a?style=flat-square&labelColor=111411)
+![Local verification](https://img.shields.io/badge/local%20verification-56%20tests%20%2B%207%20E2E-b8f34a?style=flat-square&labelColor=111411)
 ![Node](https://img.shields.io/badge/Node-%3E%3D22.13-efede5?style=flat-square&labelColor=111411)
 ![License](https://img.shields.io/badge/license-MIT-efede5?style=flat-square&labelColor=111411)
 
@@ -103,12 +103,24 @@ A repository opts in with `freshcheckout.config.json`:
   "version": 1,
   "workingDirectory": "apps/freshcheckout",
   "commands": {
-    "install": { "executable": "npm", "args": ["ci"] },
-    "test": { "executable": "npm", "args": ["test"] },
-    "build": { "executable": "npm", "args": ["run", "build"] },
+    "install": {
+      "executable": "npx",
+      "args": ["--yes", "--package=node@22.22.0", "--package=npm@10.9.4", "npm", "ci"]
+    },
+    "test": {
+      "executable": "npx",
+      "args": ["--yes", "--package=node@22.22.0", "--package=npm@10.9.4", "npm", "test"]
+    },
+    "build": {
+      "executable": "npx",
+      "args": ["--yes", "--package=node@22.22.0", "--package=npm@10.9.4", "npm", "run", "build"]
+    },
     "start": {
-      "executable": "node",
+      "executable": "npx",
       "args": [
+        "--yes",
+        "--package=node@22.22.0",
+        "node",
         "node_modules/tsx/dist/cli.mjs",
         "src/server/index.ts",
         "--host",
@@ -124,6 +136,8 @@ A repository opts in with `freshcheckout.config.json`:
 ```
 
 Commands are data, not shell prose. FreshCheckout rejects traversal, absolute working directories, control characters, shell operators, invalid ports, oversized argv, and empty assertions before execution.
+
+The canonical contract pins Node `22.22.0` and npm `10.9.4` through direct `npx` argv. This keeps the public proof on the supported runtime even though Solari's standard `base` Sandbox currently boots with Node 18.
 
 ## Safety boundaries
 
@@ -167,11 +181,11 @@ Without a key, the product remains in deterministic demo mode. Never commit or e
 npm run verify
 ```
 
-`verify` runs the dependency audit, strict typecheck, lint, 55 unit/integration tests, production build, and Playwright desktop/mobile suite locally. No hosted CI account or Solari credit is required.
+`verify` runs the dependency audit, strict typecheck, lint, 56 unit/integration tests, production build, and Playwright desktop/mobile suite locally. No hosted CI account or Solari credit is required.
 
 Verified baseline:
 
-- 55 unit and integration tests
+- 56 unit and integration tests
 - TypeScript strict checks
 - ESLint clean
 - Production build

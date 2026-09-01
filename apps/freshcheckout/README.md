@@ -70,7 +70,7 @@ Without `SOLARI_API_KEY`, the UI offers a deterministic demo. Demo receipts repe
 
 With a Solari key configured in the server environment, the Live option becomes available. Never expose the key in chat, source control, browser code, or sandbox environment variables.
 
-The verified checkout evidence used the Solari `code` template's Node `18.20.4` only for the bounded, keyless `npm ci` / test / build / start contract inside the Sandbox. That observed path is not a claim of general Node 18 support for the live orchestrator or developer toolchain.
+The historical `e0f4dbc` evidence ran under the provider image's Node `18.20.4` with engine warnings. The canonical contract now pins Node `22.22.0` and npm `10.9.4` through direct `npx` argv inside Solari's headless `base` Sandbox. FreshCheckout does not claim general Node 18 support.
 
 ## Gates
 
@@ -84,7 +84,7 @@ npm run test:e2e
 
 Current verified local baseline:
 
-- 55 unit/integration tests passing
+- 56 unit/integration tests passing
 - production build passing
 - Playwright desktop and mobile flows passing
 - no horizontal overflow at 390 px
