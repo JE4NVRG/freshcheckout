@@ -78,7 +78,7 @@ npm run test:e2e
 
 Current verified local baseline:
 
-- 44 unit/integration tests passing
+- 45 unit/integration tests passing
 - production build passing
 - Playwright desktop and mobile flows passing
 - no horizontal overflow at 390 px

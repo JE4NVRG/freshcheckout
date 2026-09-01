@@ -20,8 +20,10 @@ import type { ArtifactStore } from "./artifact-store.js";
 const WORK_DIRECTORY = "/workspace/repository";
 const PREVIEW_ATTEMPTS = 35;
 
-class SolariSandboxAdapter implements RemoteSandbox {
+export class SolariSandboxAdapter implements RemoteSandbox {
   private workingDirectory = WORK_DIRECTORY;
+  private previewHandle: CommandHandle | undefined;
+  private previewExit: Promise<number> | undefined;
 
   public constructor(private readonly sandbox: Sandbox) {}
 
@@ -83,6 +85,9 @@ class SolariSandboxAdapter implements RemoteSandbox {
       args: command.args,
       cwd: this.workingDirectory,
     });
+    this.previewHandle = handle;
+    this.previewExit = handle.wait();
+    void this.previewExit.catch(() => undefined);
 
     try {
       for (let attempt = 0; attempt < PREVIEW_ATTEMPTS; attempt += 1) {
@@ -99,13 +104,27 @@ class SolariSandboxAdapter implements RemoteSandbox {
       }
       throw new Error(`Preview did not listen on port ${port} within the bounded startup window.`);
     } catch (error) {
-      await handle.kill().catch(() => undefined);
+      await this.stopPreview();
       throw error;
     }
   }
 
   public async kill(): Promise<void> {
+    await this.stopPreview();
     await this.sandbox.kill();
+  }
+
+  private async stopPreview(): Promise<void> {
+    const handle = this.previewHandle;
+    const exit = this.previewExit;
+    this.previewHandle = undefined;
+    this.previewExit = undefined;
+    if (!handle) return;
+
+    await handle.kill().catch(() => undefined);
+    if (exit) {
+      await Promise.race([exit.catch(() => undefined), wait(5_000)]);
+    }
   }
 }
 
