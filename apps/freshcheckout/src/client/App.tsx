@@ -158,7 +158,7 @@ function HomePage(): ReactNode {
         <section className="hero">
           <div className="hero-copy">
             <p className="eyebrow"><span>Developer onboarding verification</span><span>Clean-room execution</span></p>
-            <h1>Your CI tests the codebase. <em>FreshCheckout tests the first run.</em></h1>
+            <h1><em>FreshCheckout tests the first run.</em></h1>
             <p className="hero-lede">
               Preview the workflow with a built-in sample, or inspect a recorded repository-backed run. The sample never fetches
               a repository, creates cloud resources, or produces verification evidence.
