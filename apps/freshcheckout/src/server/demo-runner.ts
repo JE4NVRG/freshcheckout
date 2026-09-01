@@ -44,8 +44,8 @@ export class DemoRunner {
     }));
     await this.pass(id, "sandbox", "Simulated isolated Solari Sandbox allocated. No cloud resource was created.");
     await this.pass(id, "clone", "Demo fixture loaded at the pinned commit.");
-    await this.pass(id, "inspect", "Demo metadata describes Node.js, pnpm, Vite, test and build scripts.");
-    await this.pass(id, "install", "Simulated pnpm install event. No package command was executed.", undefined, 0);
+    await this.pass(id, "inspect", "Demo metadata describes Node.js, npm, Vite, test and build scripts.");
+    await this.pass(id, "install", "Simulated npm install event. No package command was executed.", undefined, 0);
     await this.pass(id, "test", "Simulated test event for a passing fixture.", undefined, 0);
 
     if (scenario === "fail") {

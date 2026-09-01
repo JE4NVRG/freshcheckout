@@ -23,10 +23,10 @@ Live runs require `freshcheckout.config.json` at the repository root:
   "version": 1,
   "workingDirectory": "apps/freshcheckout",
   "commands": {
-    "install": { "executable": "pnpm", "args": ["install", "--frozen-lockfile"] },
-    "test": { "executable": "pnpm", "args": ["test"] },
-    "build": { "executable": "pnpm", "args": ["build"] },
-    "start": { "executable": "pnpm", "args": ["start"] }
+    "install": { "executable": "npm", "args": ["ci"] },
+    "test": { "executable": "npm", "args": ["test"] },
+    "build": { "executable": "npm", "args": ["run", "build"] },
+    "start": { "executable": "npm", "args": ["start"] }
   },
   "port": 4317,
   "assertion": { "text": "FreshCheckout tests the first run." }
@@ -56,8 +56,8 @@ GitHub URL
 
 ```bash
 cd apps/freshcheckout
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
 Open `http://127.0.0.1:4318`.
@@ -69,16 +69,16 @@ With a Solari key configured in the server environment, the Live option becomes 
 ## Gates
 
 ```bash
-pnpm typecheck
-pnpm lint
-pnpm test
-pnpm build
-pnpm test:e2e
+npm run typecheck
+npm run lint
+npm test
+npm run build
+npm run test:e2e
 ```
 
 Current verified local baseline:
 
-- 41 unit/integration tests passing
+- 44 unit/integration tests passing
 - production build passing
 - Playwright desktop and mobile flows passing
 - no horizontal overflow at 390 px

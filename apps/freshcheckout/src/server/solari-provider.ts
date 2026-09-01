@@ -25,10 +25,6 @@ class SolariSandboxAdapter implements RemoteSandbox {
 
   public constructor(private readonly sandbox: Sandbox) {}
 
-  public get id(): string {
-    return this.sandbox.id;
-  }
-
   public async clonePinned(repositoryUrl: string, defaultBranch: string, commitSha: string): Promise<void> {
     await this.sandbox.git.clone(repositoryUrl, {
       path: WORK_DIRECTORY,
@@ -110,6 +106,26 @@ class SolariSandboxAdapter implements RemoteSandbox {
 
   public async kill(): Promise<void> {
     await this.sandbox.kill();
+  }
+}
+
+export async function connectSandboxOrKill<T extends { connect(): Promise<unknown>; kill(): Promise<void> }>(sandbox: T): Promise<T> {
+  try {
+    await sandbox.connect();
+    return sandbox;
+  } catch (connectionError) {
+    try {
+      await sandbox.kill();
+    } catch (cleanupError) {
+      throw new AggregateError(
+        [connectionError, cleanupError],
+        "Solari Sandbox connection failed and immediate cleanup also failed.",
+        { cause: cleanupError },
+      );
+    }
+    throw new Error("Solari Sandbox connection failed; the created resource was destroyed.", {
+      cause: connectionError,
+    });
   }
 }
 
@@ -234,8 +250,7 @@ export function createLiveDependencies(apiKey: string, artifacts: ArtifactStore)
         lifecycle: { onTimeout: "kill" },
         metadata: { app: "freshcheckout", runId },
       });
-      await sandbox.connect();
-      return new SolariSandboxAdapter(sandbox);
+      return new SolariSandboxAdapter(await connectSandboxOrKill(sandbox));
     },
     verifyPreview: (url, expectedText) => verifyWithSolariBrowser(apiKey, url, expectedText),
     artifacts,

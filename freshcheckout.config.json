@@ -3,19 +3,19 @@
   "workingDirectory": "apps/freshcheckout",
   "commands": {
     "install": {
-      "executable": "pnpm",
-      "args": ["install", "--frozen-lockfile"]
+      "executable": "npm",
+      "args": ["ci"]
     },
     "test": {
-      "executable": "pnpm",
+      "executable": "npm",
       "args": ["test"]
     },
     "build": {
-      "executable": "pnpm",
-      "args": ["build"]
+      "executable": "npm",
+      "args": ["run", "build"]
     },
     "start": {
-      "executable": "pnpm",
+      "executable": "npm",
       "args": ["start"]
     }
   },

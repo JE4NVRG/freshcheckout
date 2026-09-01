@@ -32,7 +32,6 @@ export interface PreviewResult {
 }
 
 export interface RemoteSandbox {
-  readonly id: string;
   clonePinned(repositoryUrl: string, defaultBranch: string, commitSha: string): Promise<void>;
   readCheckoutContract(): Promise<ParsedCheckoutContract>;
   run(command: CommandSpec): Promise<CommandOutput>;

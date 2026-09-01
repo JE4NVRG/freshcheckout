@@ -3,19 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.24.0",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
     "dev": "concurrently -k -n api,web -c cyan,magenta \"tsx watch src/server/index.ts\" \"vite --host 127.0.0.1\"",
-    "build": "pnpm typecheck && vite build",
+    "build": "npm run typecheck && vite build",
     "start": "tsx src/server/index.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "pnpm build && playwright test"
+    "test:e2e": "npm run build && playwright test"
   },
   "dependencies": {
     "@fastify/static": "^10.1.3",

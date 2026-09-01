@@ -75,7 +75,7 @@ export class SolariRunner {
 
       sandbox = await this.stage(id, "sandbox", async () => {
         const created = await this.dependencies.createSandbox(id);
-        return { value: created, summary: `Solari Sandbox ${created.id} connected with a kill-on-timeout lifecycle.` };
+        return { value: created, summary: "Solari Sandbox connected with a kill-on-timeout lifecycle." };
       });
 
       await this.stage(id, "clone", async () => {
@@ -242,7 +242,7 @@ export class SolariRunner {
     await this.store.update(id, (receipt) => setStage(receipt, "cleanup", "running"));
     try {
       if (sandbox) await sandbox.kill();
-      const summary = sandbox ? `Solari Sandbox ${sandbox.id} destroyed.` : "No remote resource was created.";
+      const summary = sandbox ? "Solari Sandbox destroyed." : "No remote resource was created.";
       await this.store.update(id, (receipt) => appendLog(setStage(receipt, "cleanup", "passed", { summary }), "cleanup", "system", summary));
     } catch (error) {
       const message = `Cleanup failed: ${safeError(error)}`;

@@ -44,6 +44,7 @@ test("surfaces the deterministic failure without claiming live evidence", async 
 test("keeps the mobile entry flow inside the viewport with usable targets", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.startsWith("mobile"), "Mobile-only layout assertion");
   await page.goto("/");
+  await page.getByRole("button", { name: "Demo", exact: true }).click();
 
   const dimensions = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,

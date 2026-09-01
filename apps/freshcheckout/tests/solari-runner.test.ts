@@ -162,6 +162,7 @@ describe("SolariRunner", () => {
     expect(receipt.browser.observedOriginHash).toBe("c".repeat(64));
     expect("sessionId" in receipt.browser).toBe(false);
     expect("finalUrl" in receipt.browser).toBe(false);
+    expect(JSON.stringify(receipt)).not.toContain(sandbox.id);
     expect(receipt.logs.some((entry) => entry.message.includes("slr_live_should_never_leak"))).toBe(false);
     expect(receipt.logs.some((entry) => entry.message.includes("[REDACTED]"))).toBe(true);
   });

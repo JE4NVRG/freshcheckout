@@ -22,10 +22,10 @@ A live run requires `freshcheckout.config.json` at the repository root:
   "version": 1,
   "workingDirectory": "apps/web",
   "commands": {
-    "install": { "executable": "pnpm", "args": ["install", "--frozen-lockfile"] },
-    "test": { "executable": "pnpm", "args": ["test"] },
-    "build": { "executable": "pnpm", "args": ["build"] },
-    "start": { "executable": "pnpm", "args": ["start"] }
+    "install": { "executable": "npm", "args": ["ci"] },
+    "test": { "executable": "npm", "args": ["test"] },
+    "build": { "executable": "npm", "args": ["run", "build"] },
+    "start": { "executable": "npm", "args": ["start"] }
   },
   "port": 3000,
   "assertion": { "text": "Welcome" }
