@@ -113,6 +113,8 @@ Every receipt carries the commit SHA, checkout-contract SHA-256, runtime-policy 
 
 ## Evidence status
 
-The real Solari adapter and state machine are implemented and covered with injected-provider tests. A public claim of live execution remains blocked until a real Solari Sandbox + Browser run is captured, read back, and its cleanup is verified.
+A real Solari Sandbox + Browser run completed with verdict `verified` against commit `e0f4dbce78ec2d0db4a683d3a647f41e1ff0b1e4` on 2026-09-01. All declared stages passed, the Browser returned HTTP 200 and observed the declared text with zero console or request failures, screenshot and private replay capture succeeded, and cleanup read-back reported zero active Sandboxes.
+
+See [`evidence/e0f4dbc`](./evidence/e0f4dbc) for the bounded receipt and screenshot. The claim remains limited to one checkout contract at that immutable commit.
 
 See [PRODUCT.md](./PRODUCT.md) for scope and acceptance criteria.
