@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { canonicalizeGitHubRepository } from "../src/core/github-url.js";
 import { createInitialReceipt } from "../src/core/receipt.js";
 import type { ParsedCheckoutContract } from "../src/core/checkout-contract.js";
-import type { CommandSpec } from "../src/core/planner.js";
+import type { CommandSpec } from "../src/core/command-spec.js";
 import type {
   ArtifactWriter,
   BrowserObservation,
@@ -203,7 +203,7 @@ describe("SolariRunner", () => {
     await runner.execute(id);
 
     const receipt = await store.get(id);
-    expect(receipt.status).toBe("completed");
+    expect(receipt.status).toBe("failed");
     expect(receipt.verdict).toBe("failed");
     expect(receipt.stages.find((stage) => stage.name === "build")?.status).toBe("failed");
     expect(receipt.stages.find((stage) => stage.name === "preview")?.status).toBe("skipped");

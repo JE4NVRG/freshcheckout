@@ -3,7 +3,7 @@ import { z } from "zod";
 export const runModeSchema = z.enum(["demo", "solari"]);
 export type RunMode = z.infer<typeof runModeSchema>;
 
-export const runStatusSchema = z.enum(["queued", "running", "completed"]);
+export const runStatusSchema = z.enum(["queued", "running", "completed", "failed"]);
 export type RunStatus = z.infer<typeof runStatusSchema>;
 
 export const verdictSchema = z.enum(["pending", "verified", "partial", "failed", "demo"]);
@@ -48,6 +48,7 @@ export const stageSchema = z.object({
 export type RunStage = z.infer<typeof stageSchema>;
 
 export const sourceSchema = z.object({
+  kind: z.enum(["repository", "fixture"]).optional(),
   inputUrl: z.string().min(1),
   canonicalUrl: z.string().url(),
   owner: z.string().min(1),

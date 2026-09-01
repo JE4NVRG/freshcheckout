@@ -8,6 +8,7 @@ import { ZodError } from "zod";
 
 import { canonicalizeGitHubRepository, RepositoryUrlError } from "../core/github-url.js";
 import { createRunRequestSchema } from "../core/model.js";
+import { boundLog } from "../core/redact.js";
 import { createInitialReceipt } from "../core/receipt.js";
 import { ArtifactNotFoundError, ArtifactStore } from "./artifact-store.js";
 import { DemoRunner } from "./demo-runner.js";
@@ -25,6 +26,7 @@ interface BuildAppOptions {
   demoDelayMs?: number;
   artifacts?: ArtifactStore;
   solariApiKey?: string | null;
+  liveRunToken?: string | null;
   liveRunner?: RunExecutor;
   staticRoot?: string | null;
 }
@@ -35,6 +37,8 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   const artifacts = options.artifacts ?? new ArtifactStore();
   const demoRunner = new DemoRunner(store, options.demoDelayMs);
   const configuredKey = options.solariApiKey === undefined ? process.env.SOLARI_API_KEY : options.solariApiKey;
+  const configuredLiveToken = options.liveRunToken === undefined ? process.env.FRESHCHECKOUT_LIVE_TOKEN : options.liveRunToken;
+  const liveRunToken = configuredLiveToken && configuredLiveToken.length >= 32 ? configuredLiveToken : null;
   const liveRunner = options.liveRunner ?? (configuredKey
     ? new SolariRunner(store, createLiveDependencies(configuredKey, artifacts))
     : undefined);
@@ -44,17 +48,23 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   app.get("/api/health", () => ({
     status: "ok",
     service: "freshcheckout",
-    version: "0.1.0",
-    capabilities: { solari: Boolean(liveRunner), maxLiveConcurrency },
+    version: "0.1.1",
+    capabilities: { solari: Boolean(liveRunner && liveRunToken), maxLiveConcurrency },
   }));
 
   app.post("/api/runs", async (request, reply) => {
     try {
       const input = createRunRequestSchema.parse(request.body);
-      if (input.mode === "solari" && !liveRunner) {
+      if (input.mode === "solari" && (!liveRunner || !liveRunToken)) {
         return reply.code(409).send({
           error: "solari_not_configured",
-          message: "Real Solari mode is not configured on this server.",
+          message: "Real Solari mode and its control token are not configured on this server.",
+        });
+      }
+      if (input.mode === "solari" && request.headers["x-freshcheckout-live-token"] !== liveRunToken) {
+        return reply.code(401).send({
+          error: "live_authorization_required",
+          message: "Live checkout authorization is required.",
         });
       }
       if (input.mode === "solari" && activeLiveRuns >= maxLiveConcurrency) {
@@ -64,7 +74,10 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
         });
       }
 
-      const repository = canonicalizeGitHubRepository(input.repositoryUrl);
+      const requestedRepository = canonicalizeGitHubRepository(input.repositoryUrl);
+      const repository = input.mode === "demo"
+        ? canonicalizeGitHubRepository("https://github.com/JE4NVRG/freshcheckout")
+        : requestedRepository;
       const receipt = await store.save(createInitialReceipt(repository, input.mode));
       if (input.mode === "solari") activeLiveRuns += 1;
       const execution = input.mode === "demo"
@@ -72,7 +85,8 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
         : liveRunner!.execute(receipt.id);
       void execution
         .catch((error: unknown) => {
-          app.log.error({ err: error, runId: receipt.id, mode: input.mode }, "Runner failed");
+          const message = boundLog(error instanceof Error ? error.message : "Unknown runner failure.", 1_000);
+          app.log.error({ error: message, runId: receipt.id, mode: input.mode }, "Runner failed");
         })
         .finally(() => {
           if (input.mode === "solari") activeLiveRuns = Math.max(0, activeLiveRuns - 1);
@@ -131,7 +145,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
 
   app.get("/demo-fixture", (_request, reply) => reply
     .type("text/html; charset=utf-8")
-    .send(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>FreshCheckout known-good fixture</title><style>body{font:18px system-ui;display:grid;place-items:center;min-height:100vh;margin:0;background:#0a0d0c;color:#f3f0e8}main{border:1px solid #394137;padding:3rem;max-width:38rem}strong{color:#b8f34a}</style></head><body><main><p>Known-good fixture</p><h1>Fixture build is running</h1><p><strong>PASS</strong> This local page exists only for deterministic demo and browser tests.</p></main></body></html>`));
+    .send(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>FreshCheckout built-in fixture</title><style>body{font:18px system-ui;display:grid;place-items:center;min-height:100vh;margin:0;background:#0a0d0c;color:#f3f0e8}main{border:1px solid #394137;padding:3rem;max-width:38rem}strong{color:#b8f34a}</style></head><body><main><p>Built-in passing fixture</p><h1>FreshCheckout tests the first run.</h1><p><strong>SIMULATED PASS</strong> No repository, Sandbox, or Browser resource was used.</p></main></body></html>`));
 
   const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
   const staticRoot = options.staticRoot === undefined

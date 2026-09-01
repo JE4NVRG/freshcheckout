@@ -21,6 +21,6 @@
   },
   "port": 4317,
   "assertion": {
-    "text": "Your CI tests the codebase"
+    "text": "FreshCheckout tests the first run."
   }
 }

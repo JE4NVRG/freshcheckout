@@ -27,8 +27,8 @@ export const EXECUTION_POLICY_HASH = createHash("sha256")
 const DEMO_STAGE_LABELS: Record<StageName, string> = {
   resolve: "Resolve demo fixture",
   sandbox: "Simulate sandbox allocation",
-  clone: "Load fixture commit",
-  inspect: "Simulate checkout contract",
+  clone: "Load built-in fixture",
+  inspect: "Load built-in fixture contract",
   install: "Simulate declared install",
   test: "Simulate declared tests",
   build: "Simulate declared build",
@@ -41,6 +41,7 @@ const DEMO_STAGE_LABELS: Record<StageName, string> = {
 export function createInitialReceipt(repository: CanonicalGitHubRepository, mode: RunMode): RunReceipt {
   const now = new Date().toISOString();
   const source: RunSource = {
+    kind: mode === "demo" ? "fixture" : "repository",
     inputUrl: repository.inputUrl,
     canonicalUrl: repository.canonicalUrl,
     owner: repository.owner,
@@ -121,7 +122,7 @@ export function completeReceipt(receipt: RunReceipt, verdict: Verdict): RunRecei
   const now = new Date().toISOString();
   return {
     ...receipt,
-    status: "completed",
+    status: verdict === "failed" ? "failed" : "completed",
     verdict,
     updatedAt: now,
     completedAt: now,

@@ -3,6 +3,7 @@ const SECRET_PATTERNS: ReadonlyArray<RegExp> = [
   /\bgh[oprsu]_[A-Za-z0-9]{20,}\b/g,
   /\bgithub_pat_[A-Za-z0-9_]{20,}\b/g,
   /\bAKIA[0-9A-Z]{16}\b/g,
+  /\b[A-Z][A-Z0-9_]*(?:API_KEY|TOKEN|PASSWORD|SECRET)\s*=\s*[^\s,;]+/g,
   /\b(?:api[_-]?key|access[_-]?token|auth[_-]?token|password|secret)\s*[=:]\s*[^\s,;]+/gi,
   /\bBearer\s+[A-Za-z0-9._~+/-]+=*\b/gi,
 ];

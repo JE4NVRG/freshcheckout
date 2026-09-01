@@ -6,7 +6,7 @@ import { SolariClient, type CommandHandle, type Sandbox } from "@solarisdk/sdk";
 
 import { parseCheckoutContract, type ParsedCheckoutContract } from "../core/checkout-contract.js";
 import { boundLog } from "../core/redact.js";
-import type { CommandSpec } from "../core/planner.js";
+import type { CommandSpec } from "../core/command-spec.js";
 import type {
   BrowserObservation,
   CommandOutput,

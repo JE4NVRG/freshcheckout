@@ -1,5 +1,5 @@
 import type { ParsedCheckoutContract } from "../core/checkout-contract.js";
-import type { CommandSpec } from "../core/planner.js";
+import type { CommandSpec } from "../core/command-spec.js";
 
 export interface ResolvedSource {
   defaultBranch: string;

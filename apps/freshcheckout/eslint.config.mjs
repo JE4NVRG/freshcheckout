@@ -6,9 +6,18 @@ export default tseslint.config(
     ignores: ["dist/**", "node_modules/**", "playwright-report/**", "test-results/**", ".freshcheckout/**", "eslint.config.mjs"],
   },
   eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
+  {
+    files: ["scripts/**/*.mjs"],
+    languageOptions: {
+      globals: {
+        console: "readonly",
+        process: "readonly",
+      },
+    },
+  },
   {
     files: ["**/*.{ts,tsx}"],
+    extends: [...tseslint.configs.recommendedTypeChecked],
     languageOptions: {
       parserOptions: {
         projectService: true,

@@ -4,10 +4,12 @@ import { boundLog, redactSecrets } from "../src/core/redact.js";
 
 describe("redactSecrets", () => {
   it("redacts known credential shapes", () => {
-    const output = redactSecrets("SOLARI=slr_live_abc123 password=hunter2 Authorization: Bearer abc.def.ghi");
+    const bearer = ["abc", "def", "ghi"].join(".");
+    const output = redactSecrets(`SOLARI=slr_live_abc123 SOLARI_API_KEY=slr_live_env456 DATABASE_PASSWORD=hunter2 Authorization: Bearer ${bearer}`);
     expect(output).not.toContain("slr_live_abc123");
+    expect(output).not.toContain("slr_live_env456");
     expect(output).not.toContain("hunter2");
-    expect(output).not.toContain("abc.def.ghi");
+    expect(output).not.toContain(bearer);
     expect(output).toContain("[REDACTED]");
   });
 

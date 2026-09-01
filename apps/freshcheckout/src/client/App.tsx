@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
 
-import type { RunMode, RunReceipt, StageStatus } from "../core/model";
+import type { RunReceipt, StageStatus } from "../core/model";
 
 const DEFAULT_REPOSITORY = "https://github.com/JE4NVRG/freshcheckout";
 const VERIFIED_RUN_URL = "https://freshcheckout.je4ndev.com/runs/3f19c13f-cdeb-45dc-878b-b76cde7cf6d7";
@@ -12,12 +12,6 @@ interface CreateRunResponse {
 interface ApiErrorResponse {
   error?: string;
   message?: string;
-}
-
-interface HealthResponse {
-  capabilities?: {
-    solari?: boolean;
-  };
 }
 
 function navigate(path: string): void {
@@ -68,7 +62,7 @@ function SiteHeader(): ReactNode {
           <a href="https://github.com/JE4NVRG/freshcheckout" rel="noreferrer" target="_blank">
             GitHub <span aria-hidden="true">↗</span>
           </a>
-          <a href={VERIFIED_RUN_URL}>View real proof</a>
+          <a href={VERIFIED_RUN_URL}>Verified run</a>
         </nav>
       </header>
     </>
@@ -107,68 +101,32 @@ function StageGlyph({ status }: { status: StageStatus }): ReactNode {
   );
 }
 
-function MiniReceipt({ mode }: { mode: RunMode }): ReactNode {
-  const live = mode === "solari";
-  const rows = [
-    ["Resolve source", live ? "WAIT" : "DEMO"],
-    ["Build in microVM", live ? "WAIT" : "DEMO"],
-    ["Browser smoke", live ? "WAIT" : "DEMO"],
-    ["Clean up", live ? "WAIT" : "DEMO"],
-  ];
-
+function EmptyReceiptPreview(): ReactNode {
   return (
-    <div className="receipt-shell" aria-label="Example FreshCheckout receipt">
+    <div className="receipt-shell receipt-empty" aria-label="No demo receipt generated yet">
       <div className="receipt-paper">
         <div className="receipt-topline">
-          <span>FRESHCHECKOUT / {live ? "SOLARI LIVE" : "DEMO"}</span>
-          <span>#7F31</span>
+          <span>FRESHCHECKOUT / PREVIEW</span>
+          <span>NOT RUN</span>
         </div>
         <div className="receipt-verdict">
-          <span className="receipt-stamp">{live ? "READY" : "SIMULATED"}</span>
-          <strong>{live ? "Awaiting source" : "Demo flow complete"}</strong>
-          <small>JE4NVRG / freshcheckout</small>
+          <span className="receipt-stamp">EMPTY RECEIPT</span>
+          <strong>No run yet</strong>
+          <small>No repository, commit, Browser result, or evidence exists yet.</small>
         </div>
-        <div className="receipt-rows">
-          {rows.map(([label, value], index) => (
-            <div className="receipt-row" key={label}>
-              <span>{String(index + 1).padStart(2, "0")} {label}</span>
-              <b>{value}</b>
-            </div>
-          ))}
+        <div className="receipt-empty-lines" aria-hidden="true">
+          <span /><span /><span /><span />
         </div>
-        <div className="receipt-hash">
-          <span>POLICY</span>
-          <code>73cb9d…3e84</code>
-        </div>
-        <div className="barcode" aria-hidden="true" />
-        <p className="receipt-caption">A clean checkout beats a local promise.</p>
+        <p className="receipt-caption">A receipt appears only after an explicit run.</p>
       </div>
     </div>
   );
 }
 
 function HomePage(): ReactNode {
-  const [repositoryUrl, setRepositoryUrl] = useState(DEFAULT_REPOSITORY);
   const [scenario, setScenario] = useState<"pass" | "fail">("pass");
-  const [mode, setMode] = useState<RunMode>("demo");
-  const [solariAvailable, setSolariAvailable] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    void fetch("/api/health")
-      .then(async (response) => response.ok ? response.json() as Promise<HealthResponse> : undefined)
-      .then((health) => {
-        if (!active || !health?.capabilities?.solari) return;
-        setSolariAvailable(true);
-        setMode("solari");
-      })
-      .catch(() => undefined);
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const submit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
@@ -179,7 +137,7 @@ function HomePage(): ReactNode {
       const response = await fetch("/api/runs", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ repositoryUrl, mode, scenario }),
+        body: JSON.stringify({ repositoryUrl: DEFAULT_REPOSITORY, mode: "demo", scenario }),
       });
       const body = (await response.json()) as CreateRunResponse | ApiErrorResponse;
       if (!response.ok || !("run" in body)) {
@@ -199,100 +157,42 @@ function HomePage(): ReactNode {
       <main id="main-content" tabIndex={-1}>
         <section className="hero">
           <div className="hero-copy">
-            <p className="eyebrow"><span>Solari build challenge</span><span>Clean-room onboarding</span></p>
+            <p className="eyebrow"><span>Developer onboarding verification</span><span>Clean-room execution</span></p>
             <h1>Your CI tests the codebase. <em>FreshCheckout tests the first run.</em></h1>
             <p className="hero-lede">
-              The real runner pins a public GitHub repository at an exact commit, executes its setup in a clean Solari Sandbox,
-              opens the result in Browser, and returns evidence. This public demo safely previews that flow.
+              Preview the workflow with a built-in sample, or inspect a recorded repository-backed run. The sample never fetches
+              a repository, creates cloud resources, or produces verification evidence.
             </p>
 
             <form className="run-form" onSubmit={(event) => void submit(event)}>
-              <div className="execution-mode" role="group" aria-label="Run options">
-                <button
-                  aria-pressed={mode === "demo"}
-                  className={mode === "demo" ? "active" : ""}
-                  onClick={() => setMode("demo")}
-                  type="button"
-                >
-                  Simulated demo
-                </button>
-                {solariAvailable ? (
-                  <button
-                    aria-pressed={mode === "solari"}
-                    className={mode === "solari" ? "active" : ""}
-                    onClick={() => setMode("solari")}
-                    title="Execute with Solari Sandbox and Browser"
-                    type="button"
-                  >
-                    Solari live
-                  </button>
-                ) : (
-                  <a className="verified-mode" href={VERIFIED_RUN_URL}>View real Solari proof ↗</a>
-                )}
-                <span className="execution-note">
-                  {solariAvailable ? "Cloud runner ready" : "Demo creates no cloud resource or verification evidence."}
-                </span>
-              </div>
-              <div className="field-label">
-                <label htmlFor="repository-url">Repository with freshcheckout.config.json</label>
-                <span id="repository-hint">Public GitHub URL</span>
-              </div>
-              <div className="url-control">
-                <div className="url-input">
-                  <span aria-hidden="true" className="prompt-mark">$</span>
-                  <input
-                    autoCapitalize="none"
-                    autoComplete="url"
-                    aria-describedby="repository-hint"
-                    id="repository-url"
-                    name="repositoryUrl"
-                    onChange={(event) => setRepositoryUrl(event.target.value)}
-                    onFocus={(event) => event.currentTarget.select()}
-                    placeholder="https://github.com/owner/repository"
-                    spellCheck="false"
-                    title={repositoryUrl}
-                    type="url"
-                    value={repositoryUrl}
-                  />
+              <div className="demo-disclosure" role="note">
+                <div className="disclosure-copy">
+                  <strong>Built-in simulation</strong>
+                  <span>Uses a bundled fixture. No repository, Sandbox, Browser session, or verification evidence is created.</span>
                 </div>
-                <button disabled={submitting} type="submit">
-                  {submitting ? "Starting…" : mode === "solari" ? "Run fresh checkout" : "Run simulated demo"}
-                  {!submitting && <ArrowIcon />}
-                </button>
-              </div>
-              <div className="form-meta">
-                {mode === "demo" ? (
-                  <div className="scenario-picker" role="group" aria-label="Demo outcome">
-                    <button
-                      aria-pressed={scenario === "pass"}
-                      className={scenario === "pass" ? "active" : ""}
-                      onClick={() => setScenario("pass")}
-                      type="button"
-                    >
-                      Passing fixture
-                    </button>
-                    <button
-                      aria-pressed={scenario === "fail"}
-                      className={scenario === "fail" ? "active" : ""}
-                      onClick={() => setScenario("fail")}
-                      type="button"
-                    >
-                      Failing fixture
-                    </button>
+                <div className="disclosure-actions">
+                  <span className="scenario-label">Choose simulated outcome</span>
+                  <div className="scenario-picker" role="group" aria-label="Expected fixture outcome">
+                    <button aria-pressed={scenario === "pass"} className={scenario === "pass" ? "active" : ""} onClick={() => setScenario("pass")} type="button">Simulate pass</button>
+                    <button aria-pressed={scenario === "fail"} className={scenario === "fail" ? "active" : ""} onClick={() => setScenario("fail")} type="button">Simulate failure</button>
                   </div>
-                ) : <span className="live-run-label">Isolated Sandbox + recorded Browser</span>}
-                <p><span className="status-dot" /> {mode === "solari" ? "Real cloud execution" : "Deterministic demo mode"}</p>
+                  <button className="disclosure-run" disabled={submitting} type="submit">
+                    {submitting ? "Starting…" : "Run built-in fixture"}
+                    {!submitting && <ArrowIcon />}
+                  </button>
+                  <a href={VERIFIED_RUN_URL}>View verified repository-backed run ↗</a>
+                </div>
               </div>
               {error && <p className="form-error" role="alert">{error}</p>}
             </form>
 
-            <div className="trust-strip" aria-label="Runtime guarantees">
-              <span><LockIcon /> No repository secrets</span>
-              <span>40-char commit pin</span>
-              <span>Cleanup is mandatory</span>
+            <div className="trust-strip" aria-label="Simulation boundaries">
+              <span><LockIcon /> Built-in sample only</span>
+              <span>No repository fetched</span>
+              <span>No cloud evidence</span>
             </div>
           </div>
-          <MiniReceipt mode={mode} />
+          <EmptyReceiptPreview />
         </section>
 
         <section className="method-section" id="method">
@@ -339,7 +239,7 @@ function HomePage(): ReactNode {
       </main>
       <footer>
         <Wordmark />
-        <p>Built on Solari Browser + Sandbox. Evidence, not claims.</p>
+        <p><a href={VERIFIED_RUN_URL}>Inspect the recorded repository-backed evidence ↗</a></p>
       </footer>
     </div>
   );
@@ -373,7 +273,7 @@ function ReportPage({ runId }: { runId: string }): ReactNode {
     const poll = async (): Promise<void> => {
       try {
         const next = await load();
-        if (!cancelled && next?.status !== "completed") {
+        if (!cancelled && next && !["completed", "failed"].includes(next.status)) {
           timer = window.setTimeout(() => void poll(), 450);
         }
       } catch (caught) {
@@ -388,8 +288,12 @@ function ReportPage({ runId }: { runId: string }): ReactNode {
     };
   }, [load]);
 
-  const completedStages = useMemo(
-    () => receipt?.stages.filter((stage) => ["passed", "failed", "skipped"].includes(stage.status)).length ?? 0,
+  const stageTotals = useMemo(
+    () => ({
+      passed: receipt?.stages.filter((stage) => stage.status === "passed").length ?? 0,
+      failed: receipt?.stages.filter((stage) => stage.status === "failed").length ?? 0,
+      skipped: receipt?.stages.filter((stage) => stage.status === "skipped").length ?? 0,
+    }),
     [receipt],
   );
 
@@ -420,16 +324,12 @@ function ReportPage({ runId }: { runId: string }): ReactNode {
 
   const failedStage = receipt.stages.find((stage) => stage.status === "failed");
   const statusTitle = receipt.mode === "demo"
-    ? receipt.status === "completed"
-      ? failedStage
-        ? "Demo found a build failure"
-        : "Demo flow complete"
-      : "Running demo flow"
-    : receipt.status === "completed"
-      ? failedStage
-        ? "Fresh checkout failed"
-        : "Fresh checkout passed"
-      : "Fresh checkout running";
+    ? receipt.status === "failed"
+      ? "Built-in failing fixture failed"
+      : receipt.status === "completed" ? "Demo fixture passed" : "Running demo fixture"
+    : receipt.status === "failed" || failedStage
+      ? "Fresh checkout failed"
+      : receipt.status === "completed" ? "Fresh checkout passed" : "Fresh checkout running";
 
   return (
     <div className="page-shell report-page">
@@ -438,30 +338,34 @@ function ReportPage({ runId }: { runId: string }): ReactNode {
         <div className="report-breadcrumbs">
           <a href="/">FreshCheckout</a>
           <span>/</span>
-          <code>{receipt.id.slice(0, 8)}</code>
+          <code>Run {receipt.id.slice(0, 8)}</code>
         </div>
 
         <section className="report-hero">
           <div>
             <div className="report-badges">
-              <span className={`mode-badge mode-${receipt.mode}`}>{receipt.mode === "demo" ? "Demo environment" : "Solari live"}</span>
+              <span className={`mode-badge mode-${receipt.mode}`}>{receipt.mode === "demo" ? "Simulated fixture" : "Verified Solari run"}</span>
               <span className={`run-state run-state-${receipt.status}`}><i />{receipt.status}</span>
             </div>
             <h1>{statusTitle}</h1>
-            <a href={receipt.source.canonicalUrl} rel="noreferrer" target="_blank">
-              {receipt.source.owner} / <strong>{receipt.source.repository}</strong> <span aria-hidden="true">↗</span>
-            </a>
+            {receipt.mode === "demo" ? <p className="fixture-identity">Built-in fixture · no repository fetched</p> : (
+              <a href={receipt.source.canonicalUrl} rel="noreferrer" target="_blank">
+                {receipt.source.owner} / <strong>{receipt.source.repository}</strong> <span aria-hidden="true">↗</span>
+              </a>
+            )}
             <div className="report-actions">
               <a className="primary-action" href="/">Run another checkout</a>
               {receipt.mode === "demo" && <a href={VERIFIED_RUN_URL}>Compare with real Solari proof ↗</a>}
             </div>
           </div>
-          <div className="score-block">
-            <span>STAGE PROGRESS</span>
-            <strong>{String(completedStages).padStart(2, "0")}<small> of {receipt.stages.length}</small></strong>
-            <p>{receipt.status === "completed"
-              ? receipt.mode === "demo" ? "demo receipt generated" : "receipt generated"
-              : receipt.mode === "demo" ? "simulating workflow" : "collecting evidence"}</p>
+          <div className={`score-block${receipt.status === "failed" ? " score-block-failed" : ""}`}>
+            <span>STAGE RESULT</span>
+            <strong>{String(stageTotals.passed).padStart(2, "0")}<small> passed / {receipt.stages.length}</small></strong>
+            <p>{receipt.status === "failed"
+              ? `${stageTotals.failed} failed · ${stageTotals.skipped} skipped`
+              : receipt.status === "completed"
+                ? receipt.mode === "demo" ? "demo receipt generated" : "receipt generated"
+                : receipt.mode === "demo" ? "simulating workflow" : "collecting evidence"}</p>
           </div>
         </section>
 
@@ -493,18 +397,31 @@ function ReportPage({ runId }: { runId: string }): ReactNode {
           </section>
 
           <aside className="evidence-rail">
-            <section className="source-card">
-              <p className="eyebrow">Source identity</p>
-              <dl>
-                <div><dt>Repository</dt><dd>{receipt.source.owner}/{receipt.source.repository}</dd></div>
-                <div><dt>Branch</dt><dd>{receipt.source.defaultBranch ?? "resolving"}</dd></div>
-                <div><dt>Commit</dt><dd><code>{receipt.source.commitSha?.slice(0, 12) ?? "pending"}</code></dd></div>
-                <div><dt>Run ID</dt><dd><code>{receipt.id.slice(0, 8)}</code></dd></div>
-                <div><dt>Started</dt><dd>{new Date(receipt.createdAt).toLocaleString()}</dd></div>
-              </dl>
-            </section>
+            {receipt.mode === "demo" ? (
+              <section className="source-card">
+                <p className="eyebrow">Fixture identity</p>
+                <dl>
+                  <div><dt>Source</dt><dd>Built into FreshCheckout</dd></div>
+                  <div><dt>Repository</dt><dd>Not fetched</dd></div>
+                  <div><dt>Commit</dt><dd>Not resolved</dd></div>
+                  <div><dt>Run ID</dt><dd><code>{receipt.id.slice(0, 8)}</code></dd></div>
+                  <div><dt>Started</dt><dd>{new Date(receipt.createdAt).toLocaleString()}</dd></div>
+                </dl>
+              </section>
+            ) : (
+              <section className="source-card">
+                <p className="eyebrow">Source identity</p>
+                <dl>
+                  <div><dt>Repository</dt><dd>{receipt.source.owner}/{receipt.source.repository}</dd></div>
+                  <div><dt>Branch</dt><dd>{receipt.source.defaultBranch ?? "resolving"}</dd></div>
+                  <div><dt>Commit</dt><dd><code>{receipt.source.commitSha?.slice(0, 12) ?? "pending"}</code></dd></div>
+                  <div><dt>Run ID</dt><dd><code>{receipt.id.slice(0, 8)}</code></dd></div>
+                  <div><dt>Started</dt><dd>{new Date(receipt.createdAt).toLocaleString()}</dd></div>
+                </dl>
+              </section>
+            )}
 
-            {receipt.checkout && (
+            {receipt.mode === "solari" && receipt.checkout && (
               <section className="contract-card">
                 <p className="eyebrow">Checkout contract</p>
                 <dl>
@@ -532,7 +449,7 @@ function ReportPage({ runId }: { runId: string }): ReactNode {
                 <div className="browser-status">
                   <span>{receipt.browser.title ?? "Observed preview"}</span>
                   <b>{receipt.mode === "demo"
-                    ? "FIXTURE REACHABLE"
+                    ? "SIMULATED ASSERTION"
                     : receipt.browser.httpReachable
                       ? receipt.browser.httpStatus ? `HTTP ${receipt.browser.httpStatus}` : "REACHABLE"
                       : "NO RESPONSE"}</b>
@@ -556,7 +473,7 @@ function ReportPage({ runId }: { runId: string }): ReactNode {
             <a href={`/api/runs/${encodeURIComponent(receipt.id)}/receipt.json`} target="_blank">View {receipt.mode === "demo" ? "demo " : ""}receipt.json ↗</a>
           </div>
           <div className="terminal-window" role="log" aria-live="polite">
-            <div className="terminal-chrome"><span /><span /><span /><code>freshcheckout/{receipt.id.slice(0, 8)}</code></div>
+            <div className="terminal-chrome"><span /><span /><span /><code>freshcheckout/run-{receipt.id.slice(0, 8)}</code></div>
             <div className="terminal-lines">
               {receipt.logs.length === 0 ? (
                 <p><span>··:··:··</span><i>waiting for first event…</i></p>

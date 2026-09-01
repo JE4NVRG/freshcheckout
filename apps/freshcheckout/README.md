@@ -25,10 +25,10 @@ Live runs require `freshcheckout.config.json` at the repository root:
   "version": 1,
   "workingDirectory": "apps/freshcheckout",
   "commands": {
-    "install": { "executable": "npm", "args": ["ci"] },
-    "test": { "executable": "npm", "args": ["test"] },
-    "build": { "executable": "npm", "args": ["run", "build"] },
-    "start": { "executable": "node", "args": ["node_modules/tsx/dist/cli.mjs", "src/server/index.ts", "--host", "0.0.0.0", "--port", "4317"] }
+    "install": { "executable": "npx", "args": ["--yes", "--package=node@22.22.0", "--package=npm@10.9.4", "npm", "ci"] },
+    "test": { "executable": "npx", "args": ["--yes", "--package=node@22.22.0", "--package=npm@10.9.4", "npm", "test"] },
+    "build": { "executable": "npx", "args": ["--yes", "--package=node@22.22.0", "--package=npm@10.9.4", "npm", "run", "build"] },
+    "start": { "executable": "npx", "args": ["--yes", "--package=node@22.22.0", "node", "node_modules/tsx/dist/cli.mjs", "src/server/index.ts", "--host", "0.0.0.0", "--port", "4317"] }
   },
   "port": 4317,
   "assertion": { "text": "FreshCheckout tests the first run." }
@@ -64,13 +64,13 @@ npm install
 npm run dev
 ```
 
-Open `http://127.0.0.1:4318`.
+Open `http://127.0.0.1:4318`. This is Vite's local UI port; the checkout contract intentionally exposes the isolated application on `4317`.
 
 Without `SOLARI_API_KEY`, the UI offers a deterministic demo. Demo receipts repeatedly state that no Solari cloud execution occurred and are not valid verification evidence.
 
 With a Solari key configured in the server environment, the Live option becomes available. Never expose the key in chat, source control, browser code, or sandbox environment variables.
 
-The historical `e0f4dbc` evidence ran under the provider image's Node `18.20.4` with engine warnings. The canonical contract now pins Node `22.22.0` and npm `10.9.4` through direct `npx` argv inside Solari's headless `base` Sandbox. FreshCheckout does not claim general Node 18 support.
+The historical `e0f4dbc` evidence ran under the provider image's Node `18.20.4` with engine warnings. The canonical contract now pins Node `22.22.0` and npm `10.9.4` through direct `npx` argv inside Solari's headless `base` Sandbox. Its `preinstall` gate rejects unsupported runtimes and logs the observed version. FreshCheckout does not claim general Node 18 support.
 
 ## Gates
 
@@ -84,7 +84,7 @@ npm run test:e2e
 
 Current verified local baseline:
 
-- 56 unit/integration tests passing
+- 62 unit/integration tests passing
 - production build passing
 - Playwright desktop and mobile flows passing
 - no horizontal overflow at 390 px

@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-
 import { boundLog } from "../core/redact.js";
 import { appendReceiptLogs, completeReceipt, setStage } from "../core/receipt.js";
 import type { LogEntry, RunReceipt, StageName } from "../core/model.js";
@@ -11,9 +9,6 @@ function wait(milliseconds: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
-function commitFor(canonicalUrl: string): string {
-  return createHash("sha1").update(`freshcheckout-demo:${canonicalUrl}`).digest("hex");
-}
 
 function log(receipt: RunReceipt, stage: StageName, message: string, stream: LogEntry["stream"] = "system"): RunReceipt {
   return appendReceiptLogs(receipt, [{
@@ -34,27 +29,20 @@ export class DemoRunner {
   public async execute(id: string, scenario: "pass" | "fail"): Promise<void> {
     await this.store.update(id, (receipt) => ({ ...receipt, status: "running", updatedAt: new Date().toISOString() }));
 
-    await this.pass(id, "resolve", "Demo source resolved to an immutable fixture commit.", (receipt) => ({
-      ...receipt,
-      source: {
-        ...receipt.source,
-        defaultBranch: "main",
-        commitSha: commitFor(receipt.source.canonicalUrl),
-      },
-    }));
+    await this.pass(id, "resolve", "Built-in demo fixture selected. No repository was fetched or resolved.");
     await this.pass(id, "sandbox", "Simulated isolated Solari Sandbox allocated. No cloud resource was created.");
-    await this.pass(id, "clone", "Demo fixture loaded at the pinned commit.");
-    await this.pass(id, "inspect", "Demo metadata describes Node.js, npm, Vite, test and build scripts.");
+    await this.pass(id, "clone", "Built-in fixture loaded from application memory. No Git clone occurred.");
+    await this.pass(id, "inspect", "Built-in fixture contract loaded. No freshcheckout.config.json was read from a repository.");
     await this.pass(id, "install", "Simulated npm install event. No package command was executed.", undefined, 0);
-    await this.pass(id, "test", "Simulated test event for a passing fixture.", undefined, 0);
+    await this.pass(id, "test", "Built-in fixture test stage marked passed before build evaluation.", undefined, 0);
 
     if (scenario === "fail") {
-      await this.fail(id, "build", "Failure fixture: unresolved import in src/dashboard.tsx.", 1);
+      await this.fail(id, "build", "Built-in failing fixture: the declared build step returned exit code 1.", 1);
       await this.skip(id, "preview", "Skipped because the build failed.");
       await this.skip(id, "browser", "Skipped because no preview was produced.");
       await this.pass(id, "receipt", "Failure fixture recorded in a demo receipt. Not valid verification evidence.");
       await this.pass(id, "cleanup", "Simulated sessions destroyed. No cloud resource existed.");
-      await this.store.update(id, (receipt) => completeReceipt(receipt, "demo"));
+      await this.store.update(id, (receipt) => ({ ...completeReceipt(receipt, "failed"), status: "failed" }));
       return;
     }
 
@@ -64,10 +52,8 @@ export class DemoRunner {
       ...receipt,
       browser: {
         ...receipt.browser,
-        title: "FreshCheckout known-good fixture",
-        httpReachable: true,
-        httpStatus: 200,
-        visibleAssertion: "Fixture build is running",
+        title: "Built-in passing fixture",
+        visibleAssertion: "FreshCheckout tests the first run.",
         consoleErrorCount: 0,
         failedRequestCount: 0,
         replayCaptured: false,

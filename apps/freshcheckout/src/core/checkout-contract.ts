@@ -2,10 +2,22 @@ import { createHash } from "node:crypto";
 
 import { z } from "zod";
 
-import type { CommandSpec } from "./planner.js";
+import type { CommandSpec } from "./command-spec.js";
 
 const FORBIDDEN_SHELL_CHARACTERS = /[;&|`><\r\n]/;
 const EXECUTABLE_PATTERN = /^[A-Za-z0-9@._+-]{1,80}$/;
+const FORBIDDEN_SHELL_EXECUTABLES = new Set([
+  "bash", "cmd", "cmd.exe", "dash", "fish", "powershell", "powershell.exe", "pwsh", "pwsh.exe", "sh", "zsh",
+]);
+const FORBIDDEN_WRAPPER_EXECUTABLES = new Set(["busybox", "env", "xargs"]);
+const FORBIDDEN_INLINE_CODE_FLAGS: Readonly<Record<string, ReadonlySet<string>>> = {
+  node: new Set(["-e", "--eval", "-p", "--print"]),
+  perl: new Set(["-e"]),
+  php: new Set(["-r"]),
+  python: new Set(["-c"]),
+  python3: new Set(["-c"]),
+  ruby: new Set(["-e"]),
+};
 
 function containsControlCharacters(value: string): boolean {
   return Array.from(value).some((character) => {
@@ -21,12 +33,27 @@ const argumentSchema = z.string().min(1).max(500).superRefine((value, context) =
   if (FORBIDDEN_SHELL_CHARACTERS.test(value)) {
     context.addIssue({ code: "custom", message: "Arguments cannot contain shell operators." });
   }
+  if (value.includes("$(") || value.includes("${")) {
+    context.addIssue({ code: "custom", message: "Arguments cannot contain command or parameter substitution." });
+  }
 });
 
 const commandSchema = z.object({
-  executable: z.string().regex(EXECUTABLE_PATTERN, "Executable must be a bare program name."),
+  executable: z.string()
+    .regex(EXECUTABLE_PATTERN, "Executable must be a bare program name.")
+    .refine((value) => !FORBIDDEN_SHELL_EXECUTABLES.has(value.toLowerCase()), "Shell executables are not allowed."),
   args: z.array(argumentSchema).max(40),
-}).strict();
+}).strict().superRefine((command, context) => {
+  const executable = command.executable.toLowerCase();
+  if (FORBIDDEN_WRAPPER_EXECUTABLES.has(executable)) {
+    context.addIssue({ code: "custom", path: ["executable"], message: "Command wrapper executables are not allowed." });
+  }
+  const inlineFlags = FORBIDDEN_INLINE_CODE_FLAGS[executable];
+  const inlineFlagIndex = inlineFlags ? command.args.findIndex((argument) => inlineFlags.has(argument)) : -1;
+  if (inlineFlagIndex >= 0) {
+    context.addIssue({ code: "custom", path: ["args", inlineFlagIndex], message: "Inline interpreter code is not allowed." });
+  }
+});
 
 const workingDirectorySchema = z.string().min(1).max(200).superRefine((value, context) => {
   if (value === ".") return;

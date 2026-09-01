@@ -9,7 +9,7 @@ FreshCheckout proves whether a new contributor can execute one declared onboardi
 [Live demo](https://freshcheckout.je4ndev.com) · [Verified live run](https://freshcheckout.je4ndev.com/runs/3f19c13f-cdeb-45dc-878b-b76cde7cf6d7) · [Machine-readable receipt](apps/freshcheckout/evidence/b74e6f4/receipt.json) · [Real provider-drift failure](apps/freshcheckout/evidence/de47fed-provider-drift/README.md) · [Product brief](apps/freshcheckout/PRODUCT.md) · [Checkout contract](freshcheckout.config.json)
 
 ![Solari verified](https://img.shields.io/badge/Solari-verified-b8f34a?style=flat-square&labelColor=111411)
-![Local verification](https://img.shields.io/badge/local%20verification-56%20tests%20%2B%207%20E2E-b8f34a?style=flat-square&labelColor=111411)
+![Local verification](https://img.shields.io/badge/local%20verification-62%20tests%20%2B%209%20E2E-b8f34a?style=flat-square&labelColor=111411)
 ![Node](https://img.shields.io/badge/Node-%3E%3D22.13-efede5?style=flat-square&labelColor=111411)
 ![License](https://img.shields.io/badge/license-MIT-efede5?style=flat-square&labelColor=111411)
 
@@ -131,13 +131,13 @@ A repository opts in with `freshcheckout.config.json`:
     }
   },
   "port": 4317,
-  "assertion": { "text": "Your CI tests the codebase" }
+  "assertion": { "text": "FreshCheckout tests the first run." }
 }
 ```
 
 Commands are data, not shell prose. FreshCheckout rejects traversal, absolute working directories, control characters, shell operators, invalid ports, oversized argv, and empty assertions before execution.
 
-The canonical contract pins Node `22.22.0` and npm `10.9.4` through direct `npx` argv. This keeps the public proof on the supported runtime even though Solari's standard `base` Sandbox currently boots with Node 18.
+The canonical contract pins Node `22.22.0` and npm `10.9.4` through direct `npx` argv. A `preinstall` gate fails below Node `22.13.0` and records the observed supported runtime in the receipt logs. This keeps the public proof on the supported runtime even though Solari's standard `base` Sandbox currently boots with Node 18.
 
 ## Safety boundaries
 
@@ -171,7 +171,7 @@ npm ci
 npm run dev
 ```
 
-Open `http://127.0.0.1:4317`.
+Open `http://127.0.0.1:4318`. Port `4318` is the local Vite UI; port `4317` is the application port declared for isolated Sandbox verification.
 
 Without a key, the product remains in deterministic demo mode. Never commit or expose a real Solari key in browser code, logs, screenshots, or public deployment configuration.
 
@@ -181,11 +181,11 @@ Without a key, the product remains in deterministic demo mode. Never commit or e
 npm run verify
 ```
 
-`verify` runs the dependency audit, strict typecheck, lint, 56 unit/integration tests, production build, and Playwright desktop/mobile suite locally. No hosted CI account or Solari credit is required.
+`verify` runs the dependency audit, strict typecheck, lint, 62 unit/integration tests, production build, and Playwright desktop/mobile suite locally. No hosted CI account or Solari credit is required.
 
 Verified baseline:
 
-- 56 unit and integration tests
+- 62 unit and integration tests
 - TypeScript strict checks
 - ESLint clean
 - Production build
@@ -218,7 +218,7 @@ FreshCheckout uses:
 - [Solari Browser](https://getsolari.com) for recorded browser observation
 - The official [Solari Cookbook](https://github.com/solari-sdk/solari-cookbook) as its upstream fork parent
 
-This project was created for the Solari build challenge and remains visibly linked to the upstream cookbook through GitHub's fork relationship.
+FreshCheckout originated in the Solari build challenge and is now maintained as a standalone JE4NDEV developer-tool product. GitHub's fork relationship and `NOTICE.md` preserve the upstream cookbook provenance. The retained `examples/` directory belongs to the upstream cookbook and is not part of the FreshCheckout runtime or product surface.
 
 ## Current scope
 

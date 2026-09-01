@@ -1,7 +1,7 @@
 import { contractCommand } from "../core/checkout-contract.js";
 import { boundLog } from "../core/redact.js";
 import { appendReceiptLogs, completeReceipt, setStage } from "../core/receipt.js";
-import type { CommandSpec } from "../core/planner.js";
+import type { CommandSpec } from "../core/command-spec.js";
 import type { LogEntry, RunReceipt, StageName, Verdict } from "../core/model.js";
 import type { LiveRunnerDependencies, RemoteSandbox } from "./runner-contract.js";
 import type { RunStore } from "./run-store.js";
