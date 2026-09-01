@@ -10,6 +10,7 @@ ExecStart=/home/jean/.nvm/versions/node/v22.23.2/bin/node node_modules/tsx/dist/
 Restart=on-failure
 RestartSec=5
 Environment=NODE_ENV=production
+Environment=SOLARI_API_KEY=
 Environment=FRESHCHECKOUT_DEMO_DELAY_MS=180
 Environment=PATH=/home/jean/.nvm/versions/node/v22.23.2/bin:/usr/local/bin:/usr/bin:/bin
 NoNewPrivileges=true
