@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNo
 import type { RunMode, RunReceipt, StageStatus } from "../core/model";
 
 const DEFAULT_REPOSITORY = "https://github.com/JE4NVRG/freshcheckout";
-const VERIFIED_RUN_PATH = "/runs/3f3aaec0-5567-4f23-a8ff-498f69fe92e5";
+const VERIFIED_RUN_URL = "https://freshcheckout.je4ndev.com/runs/3f3aaec0-5567-4f23-a8ff-498f69fe92e5";
 
 interface CreateRunResponse {
   run: RunReceipt;
@@ -58,17 +58,20 @@ function Wordmark(): ReactNode {
 
 function SiteHeader(): ReactNode {
   return (
-    <header className="site-header">
-      <Wordmark />
-      <nav aria-label="Primary navigation">
-        <a href="/#method">Method</a>
-        <a href="/#security">Safety</a>
-        <a href="https://github.com/JE4NVRG/freshcheckout" rel="noreferrer" target="_blank">
-          GitHub <span aria-hidden="true">↗</span>
-        </a>
-        <a href={VERIFIED_RUN_PATH}>Verified run</a>
-      </nav>
-    </header>
+    <>
+      <a className="skip-link" href="#main-content">Skip to main content</a>
+      <header className="site-header">
+        <Wordmark />
+        <nav aria-label="Primary navigation">
+          <a href="/#method">Method</a>
+          <a href="/#security">Safety</a>
+          <a href="https://github.com/JE4NVRG/freshcheckout" rel="noreferrer" target="_blank">
+            GitHub <span aria-hidden="true">↗</span>
+          </a>
+          <a href={VERIFIED_RUN_URL}>View real proof</a>
+        </nav>
+      </header>
+    </>
   );
 }
 
@@ -123,7 +126,7 @@ function MiniReceipt({ mode }: { mode: RunMode }): ReactNode {
         <div className="receipt-verdict">
           <span className="receipt-stamp">{live ? "READY" : "SIMULATED"}</span>
           <strong>{live ? "Awaiting source" : "Demo flow complete"}</strong>
-          <small>solari-sdk / cookbook</small>
+          <small>JE4NVRG / freshcheckout</small>
         </div>
         <div className="receipt-rows">
           {rows.map(([label, value], index) => (
@@ -193,58 +196,67 @@ function HomePage(): ReactNode {
   return (
     <div className="page-shell">
       <SiteHeader />
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <section className="hero">
           <div className="hero-copy">
             <p className="eyebrow"><span>Solari build challenge</span><span>Clean-room onboarding</span></p>
             <h1>Your CI tests the codebase. <em>FreshCheckout tests the first run.</em></h1>
             <p className="hero-lede">
-              Execute one declared setup path at an immutable commit inside a clean Solari Sandbox, then prove the first screen in a recorded Browser.
+              The real runner pins a public GitHub repository at an exact commit, executes its setup in a clean Solari Sandbox,
+              opens the result in Browser, and returns evidence. This public demo safely previews that flow.
             </p>
 
             <form className="run-form" onSubmit={(event) => void submit(event)}>
-              <div className="execution-mode" role="group" aria-label="Execution environment">
+              <div className="execution-mode" role="group" aria-label="Run options">
                 <button
                   aria-pressed={mode === "demo"}
                   className={mode === "demo" ? "active" : ""}
                   onClick={() => setMode("demo")}
                   type="button"
                 >
-                  Demo
+                  Simulated demo
                 </button>
-                <button
-                  aria-pressed={mode === "solari"}
-                  className={mode === "solari" ? "active" : ""}
-                  disabled={!solariAvailable}
-                  onClick={() => setMode("solari")}
-                  title={solariAvailable ? "Execute with Solari Sandbox and Browser" : "Configure a Solari API key to unlock live runs"}
-                  type="button"
-                >
-                  {solariAvailable ? "Solari live" : "Solari live · locked"}
-                </button>
-                <span>{solariAvailable ? "Cloud runner ready" : "Live unavailable · API key required"}</span>
+                {solariAvailable ? (
+                  <button
+                    aria-pressed={mode === "solari"}
+                    className={mode === "solari" ? "active" : ""}
+                    onClick={() => setMode("solari")}
+                    title="Execute with Solari Sandbox and Browser"
+                    type="button"
+                  >
+                    Solari live
+                  </button>
+                ) : (
+                  <a className="verified-mode" href={VERIFIED_RUN_URL}>View real Solari proof ↗</a>
+                )}
+                <span className="execution-note">
+                  {solariAvailable ? "Cloud runner ready" : "Demo creates no cloud resource or verification evidence."}
+                </span>
               </div>
               <div className="field-label">
                 <label htmlFor="repository-url">Repository with freshcheckout.config.json</label>
-                <span id="repository-hint">Paste a declared public checkout</span>
+                <span id="repository-hint">Public GitHub URL</span>
               </div>
               <div className="url-control">
-                <span aria-hidden="true" className="prompt-mark">$</span>
-                <input
-                  autoCapitalize="none"
-                  autoComplete="url"
-                  aria-describedby="repository-hint"
-                  id="repository-url"
-                  onChange={(event) => setRepositoryUrl(event.target.value)}
-                  onFocus={(event) => event.currentTarget.select()}
-                  placeholder="https://github.com/owner/repository"
-                  spellCheck="false"
-                  title={repositoryUrl}
-                  type="url"
-                  value={repositoryUrl}
-                />
+                <div className="url-input">
+                  <span aria-hidden="true" className="prompt-mark">$</span>
+                  <input
+                    autoCapitalize="none"
+                    autoComplete="url"
+                    aria-describedby="repository-hint"
+                    id="repository-url"
+                    name="repositoryUrl"
+                    onChange={(event) => setRepositoryUrl(event.target.value)}
+                    onFocus={(event) => event.currentTarget.select()}
+                    placeholder="https://github.com/owner/repository"
+                    spellCheck="false"
+                    title={repositoryUrl}
+                    type="url"
+                    value={repositoryUrl}
+                  />
+                </div>
                 <button disabled={submitting} type="submit">
-                  {submitting ? "Starting…" : mode === "solari" ? "Run fresh checkout" : "Run checkout demo"}
+                  {submitting ? "Starting…" : mode === "solari" ? "Run fresh checkout" : "Run simulated demo"}
                   {!submitting && <ArrowIcon />}
                 </button>
               </div>
@@ -385,7 +397,7 @@ function ReportPage({ runId }: { runId: string }): ReactNode {
     return (
       <div className="page-shell">
         <SiteHeader />
-        <main className="empty-state">
+        <main className="empty-state" id="main-content" tabIndex={-1}>
           <p className="eyebrow">Receipt unavailable</p>
           <h1>{error}</h1>
           <button className="text-button" onClick={() => navigate("/")} type="button">Return home</button>
@@ -398,7 +410,7 @@ function ReportPage({ runId }: { runId: string }): ReactNode {
     return (
       <div className="page-shell">
         <SiteHeader />
-        <main className="loading-state" aria-live="polite">
+        <main className="loading-state" id="main-content" tabIndex={-1} aria-live="polite">
           <span className="loader" />
           <p>Loading evidence ledger…</p>
         </main>
@@ -422,9 +434,9 @@ function ReportPage({ runId }: { runId: string }): ReactNode {
   return (
     <div className="page-shell report-page">
       <SiteHeader />
-      <main className="report-main">
+      <main className="report-main" id="main-content" tabIndex={-1}>
         <div className="report-breadcrumbs">
-          <button onClick={() => navigate("/")} type="button">FreshCheckout</button>
+          <a href="/">FreshCheckout</a>
           <span>/</span>
           <code>{receipt.id.slice(0, 8)}</code>
         </div>
@@ -439,6 +451,10 @@ function ReportPage({ runId }: { runId: string }): ReactNode {
             <a href={receipt.source.canonicalUrl} rel="noreferrer" target="_blank">
               {receipt.source.owner} / <strong>{receipt.source.repository}</strong> <span aria-hidden="true">↗</span>
             </a>
+            <div className="report-actions">
+              <a className="primary-action" href="/">Run another checkout</a>
+              {receipt.mode === "demo" && <a href={VERIFIED_RUN_URL}>Compare with real Solari proof ↗</a>}
+            </div>
           </div>
           <div className="score-block">
             <span>STAGE PROGRESS</span>
@@ -523,7 +539,7 @@ function ReportPage({ runId }: { runId: string }): ReactNode {
                 </div>
                 {receipt.browser.screenshotPath && (
                   <a className="browser-shot" href={receipt.browser.screenshotPath} rel="noreferrer" target="_blank">
-                    <img alt="Observed application rendered in Solari Browser" loading="lazy" src={receipt.browser.screenshotPath} />
+                    <img alt="Observed application rendered in Solari Browser" height="2365" loading="lazy" src={receipt.browser.screenshotPath} width="1280" />
                   </a>
                 )}
                 {receipt.browser.visibleAssertion && <p className="browser-fact">Observed text: “{receipt.browser.visibleAssertion}”</p>}
@@ -569,7 +585,7 @@ export function App(): ReactNode {
   return (
     <div className="page-shell">
       <SiteHeader />
-      <main className="empty-state">
+      <main className="empty-state" id="main-content" tabIndex={-1}>
         <p className="eyebrow">404 / no evidence</p>
         <h1>This page was not part of the run.</h1>
         <button className="text-button" onClick={() => navigate("/")} type="button">Return home</button>

@@ -17,23 +17,26 @@ test("creates an honest passing demo receipt", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByRole("heading", { level: 1 })).toContainText("FreshCheckout tests the first run");
-  await page.getByRole("button", { name: "Demo", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Run checkout demo" })).toBeVisible();
-  await page.getByRole("button", { name: "Run checkout demo" }).click();
+  await expect(page.getByRole("link", { name: "View real Solari proof ↗" })).toBeVisible();
+  await page.getByRole("button", { name: "Simulated demo", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Run simulated demo" })).toBeVisible();
+  await page.getByRole("button", { name: "Run simulated demo" }).click();
 
   await expect(page).toHaveURL(/\/runs\/[0-9a-f-]{36}$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Demo flow complete", { timeout: 15_000 });
   await expect(page.getByText("No Solari cloud execution occurred. This output is not valid verification evidence.")).toBeVisible();
   await expect(page.locator(".stage-item-passed")).toHaveCount(11);
   await expect(page.getByRole("link", { name: /View demo receipt\.json/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Run another checkout" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Compare with real Solari proof/ })).toBeVisible();
   assertNoErrors();
 });
 
 test("surfaces the deterministic failure without claiming live evidence", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Demo", exact: true }).click();
+  await page.getByRole("button", { name: "Simulated demo", exact: true }).click();
   await page.getByRole("button", { name: "Failing fixture" }).click();
-  await page.getByRole("button", { name: "Run checkout demo" }).click();
+  await page.getByRole("button", { name: "Run simulated demo" }).click();
 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Demo found a build failure", { timeout: 15_000 });
   await expect(page.locator(".stage-item-failed")).toHaveCount(1);
@@ -41,10 +44,26 @@ test("surfaces the deterministic failure without claiming live evidence", async 
   await expect(page.getByText(/Not valid verification evidence/).first()).toBeVisible();
 });
 
+test("exposes social metadata and keyboard-first navigation", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+    "content",
+    "https://freshcheckout.je4ndev.com/og-freshcheckout.png",
+  );
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary_large_image");
+
+  await page.keyboard.press("Tab");
+  const skipLink = page.getByRole("link", { name: "Skip to main content" });
+  await expect(skipLink).toBeFocused();
+  await skipLink.press("Enter");
+  await expect(page.locator("#main-content")).toBeFocused();
+});
+
 test("keeps the mobile entry flow inside the viewport with usable targets", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.startsWith("mobile"), "Mobile-only layout assertion");
   await page.goto("/");
-  await page.getByRole("button", { name: "Demo", exact: true }).click();
+  await page.getByRole("button", { name: "Simulated demo", exact: true }).click();
 
   const dimensions = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
@@ -56,5 +75,5 @@ test("keeps the mobile entry flow inside the viewport with usable targets", asyn
     (elements) => elements.map((element) => element.getBoundingClientRect().height),
   );
   expect(heights.every((height) => height >= 44)).toBe(true);
-  await expect(page.getByRole("button", { name: "Run checkout demo" })).toBeInViewport();
+  await expect(page.getByRole("button", { name: "Run simulated demo" })).toBeInViewport();
 });
