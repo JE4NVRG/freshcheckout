@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "workingDirectory": "apps/freshcheckout",
+  "commands": {
+    "install": {
+      "executable": "pnpm",
+      "args": ["install", "--frozen-lockfile"]
+    },
+    "test": {
+      "executable": "pnpm",
+      "args": ["test"]
+    },
+    "build": {
+      "executable": "pnpm",
+      "args": ["build"]
+    },
+    "start": {
+      "executable": "pnpm",
+      "args": ["start"]
+    }
+  },
+  "port": 4317,
+  "assertion": {
+    "text": "Your CI tests the codebase"
+  }
+}

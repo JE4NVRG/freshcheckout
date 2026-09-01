@@ -1,0 +1,243 @@
+import { createHash } from "node:crypto";
+import { setTimeout as wait } from "node:timers/promises";
+
+import { Solari } from "@solarisdk/browser";
+import { SolariClient, type CommandHandle, type Sandbox } from "@solarisdk/sdk";
+
+import { parseCheckoutContract, type ParsedCheckoutContract } from "../core/checkout-contract.js";
+import { boundLog } from "../core/redact.js";
+import type { CommandSpec } from "../core/planner.js";
+import type {
+  BrowserObservation,
+  CommandOutput,
+  LiveRunnerDependencies,
+  PreviewResult,
+  RemoteSandbox,
+} from "./runner-contract.js";
+import { GitHubSourceResolver } from "./github-resolver.js";
+import type { ArtifactStore } from "./artifact-store.js";
+
+const WORK_DIRECTORY = "/workspace/repository";
+const PREVIEW_ATTEMPTS = 35;
+
+class SolariSandboxAdapter implements RemoteSandbox {
+  private workingDirectory = WORK_DIRECTORY;
+
+  public constructor(private readonly sandbox: Sandbox) {}
+
+  public get id(): string {
+    return this.sandbox.id;
+  }
+
+  public async clonePinned(repositoryUrl: string, defaultBranch: string, commitSha: string): Promise<void> {
+    await this.sandbox.git.clone(repositoryUrl, {
+      path: WORK_DIRECTORY,
+      branch: defaultBranch,
+      depth: 1,
+    });
+
+    let [head] = await this.sandbox.git.log({ cwd: WORK_DIRECTORY, maxCount: 1 });
+    if (head?.hash.toLowerCase() !== commitSha) {
+      const fetched = await this.sandbox.commands.run("git", {
+        args: ["fetch", "--depth", "1", "origin", commitSha],
+        cwd: WORK_DIRECTORY,
+        timeoutMs: 60_000,
+      });
+      if (fetched.exitCode !== 0) throw new Error(`Could not fetch pinned commit: ${boundLog(fetched.stderr, 500)}`);
+      await this.sandbox.git.checkout(commitSha, { cwd: WORK_DIRECTORY });
+      [head] = await this.sandbox.git.log({ cwd: WORK_DIRECTORY, maxCount: 1 });
+    }
+
+    if (head?.hash.toLowerCase() !== commitSha) {
+      throw new Error("Observed repository HEAD does not match the resolved commit.");
+    }
+  }
+
+  public async readCheckoutContract(): Promise<ParsedCheckoutContract> {
+    let raw: string;
+    try {
+      raw = await this.sandbox.files.readText(`${WORK_DIRECTORY}/freshcheckout.config.json`);
+    } catch {
+      throw new Error("Live verification requires freshcheckout.config.json at the repository root.");
+    }
+    if (raw.length > 64_000) throw new Error("freshcheckout.config.json exceeds the 64 KB contract limit.");
+    let input: unknown;
+    try {
+      input = JSON.parse(raw) as unknown;
+    } catch {
+      throw new Error("freshcheckout.config.json is not valid JSON.");
+    }
+    const parsed = parseCheckoutContract(input);
+    this.workingDirectory = parsed.contract.workingDirectory === "."
+      ? WORK_DIRECTORY
+      : `${WORK_DIRECTORY}/${parsed.contract.workingDirectory}`;
+    return parsed;
+  }
+
+  public async run(command: CommandSpec): Promise<CommandOutput> {
+    return this.sandbox.commands.run(command.executable, {
+      args: command.args,
+      cwd: this.workingDirectory,
+      timeoutMs: command.timeoutMs,
+    });
+  }
+
+  public async startPreview(command: CommandSpec, port: number): Promise<PreviewResult> {
+    const handle: CommandHandle = await this.sandbox.commands.start(command.executable, {
+      args: command.args,
+      cwd: this.workingDirectory,
+    });
+
+    try {
+      for (let attempt = 0; attempt < PREVIEW_ATTEMPTS; attempt += 1) {
+        const probe = await this.sandbox.commands.run("node", {
+          args: [
+            "-e",
+            `const net=require('node:net');const s=net.createConnection({host:'127.0.0.1',port:${port}},()=>{s.end();process.exit(0)});s.on('error',()=>process.exit(1));setTimeout(()=>process.exit(1),1500)`,
+          ],
+          cwd: this.workingDirectory,
+          timeoutMs: 3_000,
+        });
+        if (probe.exitCode === 0) return this.sandbox.previewUrl(port);
+        await wait(1_000);
+      }
+      throw new Error(`Preview did not listen on port ${port} within the bounded startup window.`);
+    } catch (error) {
+      await handle.kill().catch(() => undefined);
+      throw error;
+    }
+  }
+
+  public async kill(): Promise<void> {
+    await this.sandbox.kill();
+  }
+}
+
+async function verifyWithSolariBrowser(apiKey: string, url: string, expectedText: string): Promise<BrowserObservation> {
+  const client = new Solari({ apiKey, timeoutMs: 90_000 });
+  let browser: Awaited<ReturnType<Solari["launch"]>> | undefined;
+  let sessionId = "";
+  let replay: Uint8Array | undefined;
+  let observation: Omit<BrowserObservation, "replay"> | undefined;
+  let operationError: unknown;
+  const cleanupErrors: Error[] = [];
+
+  try {
+    browser = await client.launch({ recording: true, retries: 1, probe: true });
+    sessionId = browser.id;
+    const expectedOrigin = new URL(url).origin;
+    const context = await browser.newContext({ serviceWorkers: "block" });
+    const page = await context.newPage();
+    const consoleErrors: string[] = [];
+    const failedRequests: string[] = [];
+
+    await page.route("**/*", async (route) => {
+      const requestUrl = route.request().url();
+      try {
+        const parsed = new URL(requestUrl);
+        if (parsed.origin === expectedOrigin || parsed.protocol === "data:" || parsed.protocol === "blob:") {
+          await route.continue();
+          return;
+        }
+      } catch {
+        // Invalid and non-standard URLs fail closed.
+      }
+      await route.abort("blockedbyclient");
+    });
+
+    page.on("console", (message) => {
+      if (message.type() === "error") consoleErrors.push(boundLog(message.text(), 500));
+    });
+    page.on("pageerror", (error) => consoleErrors.push(boundLog(error.message, 500)));
+    page.on("requestfailed", (request) => failedRequests.push(boundLog(request.url(), 500)));
+
+    const response = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60_000 });
+    await page.waitForTimeout(1_000);
+    if (!response || response.status() >= 400) {
+      throw new Error(`Preview returned HTTP ${response?.status() ?? "no response"}.`);
+    }
+    if (new URL(page.url()).origin !== expectedOrigin) {
+      throw new Error("Browser left the Solari preview origin.");
+    }
+    const title = await page.title();
+    const bodyText = boundLog(await page.locator("body").innerText(), 2_000).trim();
+    if (!bodyText) throw new Error("Browser reached the preview, but the rendered body was empty.");
+    if (!bodyText.includes(expectedText)) {
+      throw new Error("Browser reached the preview, but the declared visible text was not observed.");
+    }
+    const screenshot = await page.screenshot({ fullPage: true, type: "png" });
+
+    observation = {
+      finalUrl: page.url(),
+      title,
+      httpReachable: true,
+      httpStatus: response.status(),
+      visibleAssertion: expectedText,
+      consoleErrorCount: consoleErrors.length,
+      failedRequestCount: failedRequests.length,
+      observedOriginHash: createHash("sha256").update(expectedOrigin).digest("hex"),
+      sessionId,
+      screenshot: new Uint8Array(screenshot),
+    };
+  } catch (error) {
+    operationError = error;
+  } finally {
+    if (browser) {
+      let browserReleased = false;
+      try {
+        await browser.close();
+        browserReleased = true;
+      } catch {
+        cleanupErrors.push(new Error("Solari Browser session release failed."));
+      }
+      if (browserReleased && sessionId) {
+        for (let attempt = 0; attempt < 10; attempt += 1) {
+          try {
+            replay = await client.sessions.downloadReplay(sessionId);
+            break;
+          } catch {
+            await wait(1_500);
+          }
+        }
+      }
+    }
+    try {
+      await client.close();
+    } catch {
+      cleanupErrors.push(new Error("Solari Browser client proxy cleanup failed."));
+    }
+  }
+
+  if (operationError && cleanupErrors.length > 0) {
+    throw new AggregateError([operationError, ...cleanupErrors], "Browser verification and cleanup failed.");
+  }
+  if (operationError instanceof Error) throw operationError;
+  if (operationError !== undefined) throw new Error("Browser verification failed with a non-error value.");
+  if (cleanupErrors.length > 0) throw new AggregateError(cleanupErrors, "Browser cleanup failed.");
+  if (!observation) throw new Error("Browser verification did not produce an observation.");
+  return { ...observation, ...(replay ? { replay } : {}) };
+}
+
+export function createLiveDependencies(apiKey: string, artifacts: ArtifactStore): LiveRunnerDependencies {
+  const client = new SolariClient({ apiKey, callTimeoutMs: 90_000 });
+  const resolver = new GitHubSourceResolver();
+
+  return {
+    resolveSource: (owner, repository) => resolver.resolve(owner, repository),
+    createSandbox: async (runId) => {
+      const sandbox = await client.sandboxes.create({
+        template: "code",
+        cpu: 1,
+        memMb: 2_048,
+        diskGb: 10,
+        timeoutMs: 600_000,
+        lifecycle: { onTimeout: "kill" },
+        metadata: { app: "freshcheckout", runId },
+      });
+      await sandbox.connect();
+      return new SolariSandboxAdapter(sandbox);
+    },
+    verifyPreview: (url, expectedText) => verifyWithSolariBrowser(apiKey, url, expectedText),
+    artifacts,
+  };
+}

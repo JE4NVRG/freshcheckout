@@ -7,6 +7,16 @@ Every example in this repo is a complete program you can run in under a minute.
 They are deliberately small: one idea each, no framework, no scaffolding to read
 past. Copy one into your project and change the parts you care about.
 
+## Featured build: FreshCheckout
+
+**FreshCheckout tests the first run from a clean checkout.** It resolves an immutable GitHub commit, executes a repository-declared setup contract in Solari Sandbox, observes the declared text in a recorded Solari Browser, and returns a bounded checkout receipt.
+
+- [Product and quickstart](apps/freshcheckout/README.md)
+- [Implementation brief and acceptance criteria](apps/freshcheckout/PRODUCT.md)
+- [Executable checkout contract](freshcheckout.config.json)
+
+The deterministic demo is available without cloud credentials. A live-evidence claim remains blocked until an actual Solari run and cleanup are verified.
+
 ## Examples
 
 ### Cloud browser
