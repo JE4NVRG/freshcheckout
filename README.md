@@ -6,10 +6,10 @@
 
 FreshCheckout proves whether a new contributor can execute one declared onboarding path from an immutable commit in a clean machine, then observe the expected product screen.
 
-[Live demo](https://freshcheckout.je4ndev.com) · [Verified live run](https://freshcheckout.je4ndev.com/runs/3f19c13f-cdeb-45dc-878b-b76cde7cf6d7) · [Machine-readable receipt](apps/freshcheckout/evidence/b74e6f4/receipt.json) · [Real provider-drift failure](apps/freshcheckout/evidence/de47fed-provider-drift/README.md) · [Product brief](apps/freshcheckout/PRODUCT.md) · [Checkout contract](freshcheckout.config.json)
+[Live demo](https://freshcheckout.je4ndev.com) · [Verified live run](https://freshcheckout.je4ndev.com/runs/verified) · [Machine-readable receipt](https://freshcheckout.je4ndev.com/runs/verified/receipt.json) · [Real provider-drift failure](apps/freshcheckout/evidence/de47fed-provider-drift/README.md) · [Product brief](apps/freshcheckout/PRODUCT.md) · [Checkout contract](freshcheckout.config.json)
 
 ![Solari verified](https://img.shields.io/badge/Solari-verified-b8f34a?style=flat-square&labelColor=111411)
-![Local verification](https://img.shields.io/badge/local%20verification-62%20tests%20%2B%209%20E2E-b8f34a?style=flat-square&labelColor=111411)
+![Local verification](https://img.shields.io/badge/local%20verification-63%20tests%20%2B%209%20E2E-b8f34a?style=flat-square&labelColor=111411)
 ![Node](https://img.shields.io/badge/Node-%3E%3D22.13-efede5?style=flat-square&labelColor=111411)
 ![License](https://img.shields.io/badge/license-MIT-efede5?style=flat-square&labelColor=111411)
 
@@ -181,11 +181,11 @@ Without a key, the product remains in deterministic demo mode. Never commit or e
 npm run verify
 ```
 
-`verify` runs the dependency audit, strict typecheck, lint, 62 unit/integration tests, production build, and Playwright desktop/mobile suite locally. No hosted CI account or Solari credit is required.
+`verify` runs the dependency audit, strict typecheck, lint, 63 unit/integration tests, production build, and Playwright desktop/mobile suite locally. No hosted CI account or Solari credit is required.
 
 Verified baseline:
 
-- 62 unit and integration tests
+- 63 unit and integration tests
 - TypeScript strict checks
 - ESLint clean
 - Production build

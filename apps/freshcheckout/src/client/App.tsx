@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNo
 import type { RunReceipt, StageStatus } from "../core/model";
 
 const DEFAULT_REPOSITORY = "https://github.com/JE4NVRG/freshcheckout";
-const VERIFIED_RUN_URL = "https://freshcheckout.je4ndev.com/runs/3f19c13f-cdeb-45dc-878b-b76cde7cf6d7";
+const VERIFIED_RUN_URL = "/runs/verified";
 
 interface CreateRunResponse {
   run: RunReceipt;

@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import fastifyStatic from "@fastify/static";
-import Fastify, { type FastifyInstance } from "fastify";
+import Fastify, { type FastifyInstance, type FastifyReply } from "fastify";
 import { ZodError } from "zod";
 
 import { canonicalizeGitHubRepository, RepositoryUrlError } from "../core/github-url.js";
@@ -27,6 +27,7 @@ interface BuildAppOptions {
   artifacts?: ArtifactStore;
   solariApiKey?: string | null;
   liveRunToken?: string | null;
+  verifiedRunId?: string | null;
   liveRunner?: RunExecutor;
   staticRoot?: string | null;
 }
@@ -39,6 +40,10 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   const configuredKey = options.solariApiKey === undefined ? process.env.SOLARI_API_KEY : options.solariApiKey;
   const configuredLiveToken = options.liveRunToken === undefined ? process.env.FRESHCHECKOUT_LIVE_TOKEN : options.liveRunToken;
   const liveRunToken = configuredLiveToken && configuredLiveToken.length >= 32 ? configuredLiveToken : null;
+  const configuredVerifiedRunId = options.verifiedRunId === undefined ? process.env.FRESHCHECKOUT_VERIFIED_RUN_ID : options.verifiedRunId;
+  const verifiedRunId = configuredVerifiedRunId && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(configuredVerifiedRunId)
+    ? configuredVerifiedRunId
+    : null;
   const liveRunner = options.liveRunner ?? (configuredKey
     ? new SolariRunner(store, createLiveDependencies(configuredKey, artifacts))
     : undefined);
@@ -145,7 +150,40 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
 
   app.get("/demo-fixture", (_request, reply) => reply
     .type("text/html; charset=utf-8")
-    .send(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>FreshCheckout built-in fixture</title><style>body{font:18px system-ui;display:grid;place-items:center;min-height:100vh;margin:0;background:#0a0d0c;color:#f3f0e8}main{border:1px solid #394137;padding:3rem;max-width:38rem}strong{color:#b8f34a}</style></head><body><main><p>Built-in passing fixture</p><h1>FreshCheckout tests the first run.</h1><p><strong>SIMULATED PASS</strong> No repository, Sandbox, or Browser resource was used.</p></main></body></html>`));
+    .send(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>FreshCheckout built-in fixture</title><style>body{font:18px system-ui;display:grid;place-items:center;min-height:100vh;margin:0;background:#0a0d0c;color:#f3f0e8}main{border:1px solid #394137;padding:3rem;max-width:38rem}strong{color:#b8f34a}</style></head><body><main><p>Built-in passing fixture</p><h1>FreshCheckout tests the first run.</h1><p><strong>SIMULATED PASS</strong> This local page exists only for deterministic demo and browser tests.</p></main></body></html>`));
+
+  async function resolveVerifiedRun(reply: FastifyReply): Promise<string | null> {
+    if (!verifiedRunId) {
+      await reply.code(404).send({ error: "verified_run_not_found", message: "No canonical verified run is configured." });
+      return null;
+    }
+    try {
+      const receipt = await store.get(verifiedRunId);
+      if (receipt.mode !== "solari" || receipt.verdict !== "verified" || receipt.status !== "completed") {
+        await reply.code(404).send({ error: "verified_run_not_found", message: "The configured run is not verified." });
+        return null;
+      }
+      return receipt.id;
+    } catch (error) {
+      if (error instanceof RunNotFoundError) {
+        await reply.code(404).send({ error: "verified_run_not_found", message: "The configured verified run does not exist." });
+        return null;
+      }
+      throw error;
+    }
+  }
+
+  app.get("/runs/verified", async (_request, reply) => {
+    const id = await resolveVerifiedRun(reply);
+    if (!id) return reply;
+    return reply.code(302).header("location", `/runs/${encodeURIComponent(id)}`).send();
+  });
+
+  app.get("/runs/verified/receipt.json", async (_request, reply) => {
+    const id = await resolveVerifiedRun(reply);
+    if (!id) return reply;
+    return reply.code(302).header("location", `/api/runs/${encodeURIComponent(id)}/receipt.json`).send();
+  });
 
   const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
   const staticRoot = options.staticRoot === undefined

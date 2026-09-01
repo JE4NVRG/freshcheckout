@@ -5,6 +5,8 @@ import path from "node:path";
 import type { FastifyInstance } from "fastify";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { canonicalizeGitHubRepository } from "../src/core/github-url.js";
+import { completeReceipt, createInitialReceipt } from "../src/core/receipt.js";
 import { buildApp } from "../src/server/app.js";
 import { RunStore } from "../src/server/run-store.js";
 
@@ -117,6 +119,25 @@ describe("FreshCheckout HTTP contract", () => {
 
     expect(response.statusCode).toBe(404);
     expect(response.json<{ error: string }>().error).toBe("run_not_found");
+  });
+
+  it("resolves stable verified links only to a configured verified Solari receipt", async () => {
+    const absent = await app.inject({ method: "GET", url: "/runs/verified" });
+    expect(absent.statusCode).toBe(404);
+
+    await app.close();
+    const store = new RunStore(path.join(temporaryDirectory, "verified-runs"));
+    const repository = canonicalizeGitHubRepository("https://github.com/JE4NVRG/freshcheckout");
+    const receipt = completeReceipt(createInitialReceipt(repository, "solari"), "verified");
+    await store.save(receipt);
+    app = await buildApp({ logger: false, store, verifiedRunId: receipt.id, solariApiKey: null, staticRoot });
+
+    const page = await app.inject({ method: "GET", url: "/runs/verified" });
+    expect(page.statusCode).toBe(302);
+    expect(page.headers.location).toBe(`/runs/${receipt.id}`);
+    const machine = await app.inject({ method: "GET", url: "/runs/verified/receipt.json" });
+    expect(machine.statusCode).toBe(302);
+    expect(machine.headers.location).toBe(`/api/runs/${receipt.id}/receipt.json`);
   });
 
   it("does not start cloud execution without an explicitly configured runner", async () => {

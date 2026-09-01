@@ -21,7 +21,7 @@ npm run verify
 
 Expected baseline:
 
-- 62 unit and contract tests passing;
+- 63 unit and contract tests passing;
 - desktop and mobile Chromium acceptance flows passing;
 - one intentional desktop skip for the mobile-only viewport assertion;
 - no live Solari resource created.

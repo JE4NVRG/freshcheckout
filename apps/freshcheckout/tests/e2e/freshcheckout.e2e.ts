@@ -20,6 +20,7 @@ test("creates an honest passing demo receipt", async ({ page }) => {
 
   await expect(page.getByRole("heading", { level: 1 })).toContainText("FreshCheckout tests the first run");
   await expect(page.getByRole("link", { name: "View verified repository-backed run ↗" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "View verified repository-backed run ↗" })).toHaveAttribute("href", "/runs/verified");
   await expect(page.getByText("Uses a bundled fixture. No repository, Sandbox, Browser session, or verification evidence is created.")).toBeVisible();
   await expect(page.getByText("No run yet")).toBeVisible();
   await expect(page.getByText("No repository, commit, Browser result, or evidence exists yet.")).toBeVisible();
