@@ -20,6 +20,7 @@ import type { ArtifactStore } from "./artifact-store.js";
 const WORK_DIRECTORY = "/workspace/repository";
 const PREVIEW_ATTEMPTS = 35;
 const COMMAND_OUTPUT_LIMIT_BYTES = 64_000;
+export const SOLARI_SANDBOX_TEMPLATE = "base" as const;
 
 export class SolariSandboxAdapter implements RemoteSandbox {
   private workingDirectory = WORK_DIRECTORY;
@@ -311,7 +312,7 @@ export function createLiveDependencies(apiKey: string, artifacts: ArtifactStore)
     resolveSource: (owner, repository) => resolver.resolve(owner, repository),
     createSandbox: async (runId) => {
       const sandbox = await client.sandboxes.create({
-        template: "code",
+        template: SOLARI_SANDBOX_TEMPLATE,
         cpu: 1,
         memMb: 2_048,
         diskGb: 10,

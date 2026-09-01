@@ -1,0 +1,150 @@
+{
+  "schemaVersion": "freshcheckout.receipt/v1",
+  "id": "7e293cb1-a7a3-4c72-8f0c-60c6ee14e0fd",
+  "mode": "solari",
+  "status": "completed",
+  "verdict": "failed",
+  "source": {
+    "inputUrl": "https://github.com/JE4NVRG/freshcheckout",
+    "canonicalUrl": "https://github.com/JE4NVRG/freshcheckout",
+    "owner": "JE4NVRG",
+    "repository": "freshcheckout",
+    "defaultBranch": "main",
+    "commitSha": "de47fed3f8a79c8abf097f623e05d14eb680f861"
+  },
+  "policy": {
+    "version": "node-web/v1",
+    "hash": "a354b0c5092e00f1a65d3de31c237c76df314aca972aed63e696ec7ccae94749",
+    "secretsInjected": false,
+    "sandboxIdleTimeoutMs": 600000,
+    "maxLogBytes": 64000
+  },
+  "stages": [
+    {
+      "name": "resolve",
+      "label": "Resolve source",
+      "status": "passed",
+      "startedAt": "2026-09-01T16:42:41.805Z",
+      "completedAt": "2026-09-01T16:42:42.548Z",
+      "durationMs": 743,
+      "summary": "Pinned main at de47fed3f8a7 (537 KB)."
+    },
+    {
+      "name": "sandbox",
+      "label": "Create sandbox",
+      "status": "failed",
+      "startedAt": "2026-09-01T16:42:42.551Z",
+      "completedAt": "2026-09-01T16:42:43.566Z",
+      "durationMs": 1015,
+      "summary": "template: \"code\" is a desktop template, not sandbox"
+    },
+    {
+      "name": "clone",
+      "label": "Clone commit",
+      "status": "skipped",
+      "completedAt": "2026-09-01T16:42:43.568Z",
+      "summary": "Skipped after failure: template: \"code\" is a desktop template, not sandbox"
+    },
+    {
+      "name": "inspect",
+      "label": "Read checkout contract",
+      "status": "skipped",
+      "completedAt": "2026-09-01T16:42:43.568Z",
+      "summary": "Skipped after failure: template: \"code\" is a desktop template, not sandbox"
+    },
+    {
+      "name": "install",
+      "label": "Run declared install",
+      "status": "skipped",
+      "completedAt": "2026-09-01T16:42:43.568Z",
+      "summary": "Skipped after failure: template: \"code\" is a desktop template, not sandbox"
+    },
+    {
+      "name": "test",
+      "label": "Run declared tests",
+      "status": "skipped",
+      "completedAt": "2026-09-01T16:42:43.568Z",
+      "summary": "Skipped after failure: template: \"code\" is a desktop template, not sandbox"
+    },
+    {
+      "name": "build",
+      "label": "Run declared build",
+      "status": "skipped",
+      "completedAt": "2026-09-01T16:42:43.568Z",
+      "summary": "Skipped after failure: template: \"code\" is a desktop template, not sandbox"
+    },
+    {
+      "name": "preview",
+      "label": "Expose declared port",
+      "status": "skipped",
+      "completedAt": "2026-09-01T16:42:43.568Z",
+      "summary": "Skipped after failure: template: \"code\" is a desktop template, not sandbox"
+    },
+    {
+      "name": "browser",
+      "label": "Observe declared text",
+      "status": "skipped",
+      "completedAt": "2026-09-01T16:42:43.568Z",
+      "summary": "Skipped after failure: template: \"code\" is a desktop template, not sandbox"
+    },
+    {
+      "name": "receipt",
+      "label": "Generate checkout receipt",
+      "status": "passed",
+      "completedAt": "2026-09-01T16:42:43.572Z",
+      "summary": "Failure receipt generated: template: \"code\" is a desktop template, not sandbox"
+    },
+    {
+      "name": "cleanup",
+      "label": "Destroy sandbox",
+      "status": "passed",
+      "startedAt": "2026-09-01T16:42:43.574Z",
+      "completedAt": "2026-09-01T16:42:43.576Z",
+      "durationMs": 2,
+      "summary": "No remote resource was created."
+    }
+  ],
+  "logs": [
+    {
+      "at": "2026-09-01T16:42:41.805Z",
+      "stage": "resolve",
+      "stream": "system",
+      "message": "Starting resolve."
+    },
+    {
+      "at": "2026-09-01T16:42:42.548Z",
+      "stage": "resolve",
+      "stream": "system",
+      "message": "Pinned main at de47fed3f8a7 (537 KB)."
+    },
+    {
+      "at": "2026-09-01T16:42:42.551Z",
+      "stage": "sandbox",
+      "stream": "system",
+      "message": "Starting sandbox."
+    },
+    {
+      "at": "2026-09-01T16:42:43.566Z",
+      "stage": "sandbox",
+      "stream": "stderr",
+      "message": "template: \"code\" is a desktop template, not sandbox"
+    },
+    {
+      "at": "2026-09-01T16:42:43.572Z",
+      "stage": "receipt",
+      "stream": "system",
+      "message": "Failure receipt generated: template: \"code\" is a desktop template, not sandbox"
+    },
+    {
+      "at": "2026-09-01T16:42:43.576Z",
+      "stage": "cleanup",
+      "stream": "system",
+      "message": "No remote resource was created."
+    }
+  ],
+  "browser": {},
+  "createdAt": "2026-09-01T16:42:41.788Z",
+  "updatedAt": "2026-09-01T16:42:43.579Z",
+  "completedAt": "2026-09-01T16:42:43.579Z",
+  "disclaimer": "This receipt records one declared checkout path observed at one commit. It is not a security audit, endorsement, production-readiness claim, or guarantee."
+}

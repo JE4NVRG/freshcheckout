@@ -6,10 +6,10 @@
 
 FreshCheckout proves whether a new contributor can execute one declared onboarding path from an immutable commit in a clean machine, then observe the expected product screen.
 
-[Live demo](https://freshcheckout.je4ndev.com) · [Verified live run](https://freshcheckout.je4ndev.com/runs/3f3aaec0-5567-4f23-a8ff-498f69fe92e5) · [Machine-readable receipt](apps/freshcheckout/evidence/e0f4dbc/receipt.json) · [Product brief](apps/freshcheckout/PRODUCT.md) · [Checkout contract](freshcheckout.config.json)
+[Live demo](https://freshcheckout.je4ndev.com) · [Verified live run](https://freshcheckout.je4ndev.com/runs/3f3aaec0-5567-4f23-a8ff-498f69fe92e5) · [Machine-readable receipt](apps/freshcheckout/evidence/e0f4dbc/receipt.json) · [Real provider-drift failure](apps/freshcheckout/evidence/de47fed-provider-drift/README.md) · [Product brief](apps/freshcheckout/PRODUCT.md) · [Checkout contract](freshcheckout.config.json)
 
 ![Solari verified](https://img.shields.io/badge/Solari-verified-b8f34a?style=flat-square&labelColor=111411)
-![Local verification](https://img.shields.io/badge/local%20verification-54%20tests%20%2B%207%20E2E-b8f34a?style=flat-square&labelColor=111411)
+![Local verification](https://img.shields.io/badge/local%20verification-55%20tests%20%2B%207%20E2E-b8f34a?style=flat-square&labelColor=111411)
 ![Node](https://img.shields.io/badge/Node-%3E%3D22.13-efede5?style=flat-square&labelColor=111411)
 ![License](https://img.shields.io/badge/license-MIT-efede5?style=flat-square&labelColor=111411)
 
@@ -167,11 +167,11 @@ Without a key, the product remains in deterministic demo mode. Never commit or e
 npm run verify
 ```
 
-`verify` runs the dependency audit, strict typecheck, lint, 54 unit/integration tests, production build, and Playwright desktop/mobile suite locally. No hosted CI account or Solari credit is required.
+`verify` runs the dependency audit, strict typecheck, lint, 55 unit/integration tests, production build, and Playwright desktop/mobile suite locally. No hosted CI account or Solari credit is required.
 
 Verified baseline:
 
-- 54 unit and integration tests
+- 55 unit and integration tests
 - TypeScript strict checks
 - ESLint clean
 - Production build
@@ -188,6 +188,7 @@ apps/freshcheckout/
 ├── src/server/          Fastify API, stores, Solari adapters, and runner
 ├── tests/               Unit, integration, lifecycle, retention, and E2E gates
 ├── evidence/e0f4dbc/    Verified real-cloud receipt and screenshot
+├── evidence/de47fed-provider-drift/  Real failed run and remediation
 ├── PRODUCT.md           Product scope and acceptance criteria
 └── README.md            Technical quickstart and receipt semantics
 

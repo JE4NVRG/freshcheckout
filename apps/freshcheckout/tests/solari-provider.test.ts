@@ -2,9 +2,19 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { Sandbox } from "@solarisdk/sdk";
 
-import { connectSandboxOrKill, SolariSandboxAdapter } from "../src/server/solari-provider.js";
+import {
+  connectSandboxOrKill,
+  SOLARI_SANDBOX_TEMPLATE,
+  SolariSandboxAdapter,
+} from "../src/server/solari-provider.js";
 
 type DataChunk = { stream: "stdout" | "stderr"; data: string };
+
+describe("Solari sandbox template", () => {
+  it("uses the headless base template, never the desktop code template", () => {
+    expect(SOLARI_SANDBOX_TEMPLATE).toBe("base");
+  });
+});
 
 function fakeSandbox() {
   return {
